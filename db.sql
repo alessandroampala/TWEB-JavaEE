@@ -52,6 +52,7 @@ CREATE TABLE archivioPrenotazione (
     docenteID int(11) NOT NULL,
     utenteID varchar(100) NOT NULL,
     lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
+    status ENUM ('done', 'canceled'),
     PRIMARY KEY (id),
     UNIQUE(docenteID, lessonDate),
     UNIQUE(utenteID, lessonDate)
