@@ -39,8 +39,7 @@ CREATE TABLE prenotazione (
     utenteID varchar(100) NOT NULL,
     lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
     PRIMARY KEY (id),
-    FOREIGN KEY (corsoID) REFERENCES lezione(corsoID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (docenteID) REFERENCES lezione(docenteID) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (corsoID, docenteID) REFERENCES lezione(corsoID, docenteID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (utenteID) REFERENCES utente(username) ON DELETE CASCADE ON UPDATE CASCADE,
     UNIQUE(docenteID, lessonDate),
     UNIQUE(utenteID, lessonDate)

@@ -21,17 +21,6 @@ public class Dao
         }
     }
 
-    public void insertUser(User user)
-    {
-        //hash password
-
-    }
-
-    public void deleteUser(User user)
-    {
-
-    }
-
     public static void insertTeacher(String name, String surname)
     {
         Connection conn = null;
@@ -55,7 +44,8 @@ public class Dao
             {
                 try
                 {
-                    st.close();
+                    if(st != null)
+                        st.close();
                     conn.close();
                 } catch (SQLException e)
                 {
@@ -74,7 +64,36 @@ public class Dao
 
     public void insertCourse(String name)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "INSERT INTO corso (nome) values(?)";
+            st = conn.prepareStatement(sql);
+            st.setString(1, name);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     //ADMIN
@@ -83,9 +102,39 @@ public class Dao
 
     }
 
-    public void insertLesson(String courseName, Teacher teacher)
+    public void insertLesson(String courseName, int teacherId)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "INSERT INTO lezione (corsoID, docenteID) values(?, ?)";
+            st = conn.prepareStatement(sql);
+            st.setString(1, courseName);
+            st.setInt(2, teacherId);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     //ADMIN
@@ -96,7 +145,39 @@ public class Dao
 
     public void insertBooking(String username, int teacherId, String course, int lessonSlot)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?)";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.setInt(2, teacherId);
+            st.setString(3, username);
+            st.setInt(4, lessonSlot);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     public void cancelBooking(String username, int teacherId, String course, int lessonSlot)
