@@ -66,16 +66,25 @@ INSERT into utente (username, password, admin) values ('Martino','Gallo',0);
 
 delimiter |
 
-CREATE TRIGGER archivia AFTER UPDATE ON prenotazione
+CREATE TRIGGER archiviaOnUpdate AFTER UPDATE ON prenotazione
 FOR EACH ROW
 BEGIN
     IF  (NEW.status <> OLD.status) THEN
-
         INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
         VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, NEW.status);
-
-
     END IF;
+END;
+|
+
+delimiter ;
+
+delimiter |
+
+CREATE TRIGGER archiviaOnDelete BEFORE DELETE ON prenotazione
+FOR EACH ROW
+BEGIN
+    INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
+    VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, 'canceled');
 END;
 |
 

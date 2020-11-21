@@ -270,22 +270,88 @@ public class Dao
     //same as deleteBooking
     public void cancelBooking(String username, int teacherId, String course, int lessonSlot)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "DELETE FROM prenotazione" +
+                    " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.setInt(2, teacherId);
+            st.setString(3, username);
+            st.setInt(4, lessonSlot);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     //mark booking as done
     public void markBooking(String username, int teacherId, String course, int lessonSlot)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "UPDATE prenotazione SET status = 'done'" +
+                    " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.setInt(2, teacherId);
+            st.setString(3, username);
+            st.setInt(4, lessonSlot);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     /*public List<Booking> getBookings(String username)
     {
 
-    }
+    }*/
 
     //ADMIN
-    public List<Booking> getAllBookings()
+    /*public List<Booking> getAllBookings()
     {
 
     }*/
@@ -339,13 +405,21 @@ class Booking
     int teacherId;
     String course;
     int lessonSlot;
-    //Enum active/done/dismissed/
+    Status status;
 
-    public Booking(String username, int teacherId, String course, int lessonSlot)
+    public Booking(String username, int teacherId, String course, int lessonSlot, Status status)
     {
         this.username = username;
         this.teacherId = teacherId;
         this.course = course;
         this.lessonSlot = lessonSlot;
+        this.status = status;
     }
+}
+
+enum Status
+{
+    ACTIVE,
+    DONE,
+    CANCELED,
 }
