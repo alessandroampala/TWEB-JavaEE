@@ -1,4 +1,3 @@
-import java.awt.print.Book;
 import java.sql.*;
 import java.util.List;
 
@@ -28,7 +27,7 @@ public class Dao
         try
         {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "INSERT INTO docente (nome, cognome) values(?, ?)";
+            String sql = "INSERT INTO docente (nome, cognome) values(?, ?);";
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.setString(2, surname);
@@ -59,7 +58,36 @@ public class Dao
     //ADMIN
     public void deleteTeacher(Teacher teacher)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "DELETE FROM docente WHERE id = ?;";
+            st = conn.prepareStatement(sql);
+            st.setInt(1, teacher.getId());
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     public void insertCourse(String name)
@@ -69,7 +97,7 @@ public class Dao
         try
         {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "INSERT INTO corso (nome) values(?)";
+            String sql = "INSERT INTO corso (nome) values(?);";
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.executeUpdate();
@@ -99,7 +127,36 @@ public class Dao
     //ADMIN
     public void deleteCourse(String course)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "DELETE FROM corso WHERE nome = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     public void insertLesson(String courseName, int teacherId)
@@ -109,7 +166,7 @@ public class Dao
         try
         {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "INSERT INTO lezione (corsoID, docenteID) values(?, ?)";
+            String sql = "INSERT INTO lezione (corsoID, docenteID) values(?, ?);";
             st = conn.prepareStatement(sql);
             st.setString(1, courseName);
             st.setInt(2, teacherId);
@@ -140,7 +197,37 @@ public class Dao
     //ADMIN
     public void deleteLesson(String courseName, Teacher teacher)
     {
-
+        Connection conn = null;
+        PreparedStatement st = null;
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "DELETE FROM lezione WHERE corsoId = ? AND docenteId = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, courseName);
+            st.setInt(2, teacher.getId());
+            st.executeUpdate();
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
     }
 
     public void insertBooking(String username, int teacherId, String course, int lessonSlot)
@@ -150,7 +237,7 @@ public class Dao
         try
         {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?)";
+            String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.setInt(2, teacherId);
@@ -180,6 +267,7 @@ public class Dao
         }
     }
 
+    //same as deleteBooking
     public void cancelBooking(String username, int teacherId, String course, int lessonSlot)
     {
 
