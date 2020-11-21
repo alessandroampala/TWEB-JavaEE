@@ -1,4 +1,5 @@
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dao
@@ -56,7 +57,7 @@ public class Dao
     }
 
     //ADMIN
-    public void deleteTeacher(Teacher teacher)
+    public static void deleteTeacher(Teacher teacher)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -90,7 +91,7 @@ public class Dao
         }
     }
 
-    public void insertCourse(String name)
+    public static void insertCourse(String name)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -125,7 +126,7 @@ public class Dao
     }
 
     //ADMIN
-    public void deleteCourse(String course)
+    public static void deleteCourse(String course)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -159,7 +160,7 @@ public class Dao
         }
     }
 
-    public void insertLesson(String courseName, int teacherId)
+    public static void insertLesson(String courseName, int teacherId)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -195,7 +196,7 @@ public class Dao
     }
 
     //ADMIN
-    public void deleteLesson(String courseName, Teacher teacher)
+    public static void deleteLesson(String courseName, Teacher teacher)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -230,7 +231,7 @@ public class Dao
         }
     }
 
-    public void insertBooking(String username, int teacherId, String course, int lessonSlot)
+    public static void insertBooking(String username, int teacherId, String course, int lessonSlot)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -268,7 +269,7 @@ public class Dao
     }
 
     //same as deleteBooking
-    public void cancelBooking(String username, int teacherId, String course, int lessonSlot)
+    public static void cancelBooking(String username, int teacherId, String course, int lessonSlot)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -307,7 +308,7 @@ public class Dao
     }
 
     //mark booking as done
-    public void markBooking(String username, int teacherId, String course, int lessonSlot)
+    public static void markBooking(String username, int teacherId, String course, int lessonSlot)
     {
         Connection conn = null;
         PreparedStatement st = null;
@@ -353,16 +354,85 @@ public class Dao
         }
     }
 
-    /*public List<Booking> getBookings(String username)
+    public static List<Booking> getBookings(String username)
     {
-
-    }*/
+        Connection conn = null;
+        PreparedStatement st = null;
+        List<Booking> out = new ArrayList<>();
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM prenotazione WHERE utenteID = ?";
+            st = conn.prepareStatement(sql);
+            st.setString(1, username);
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next())
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
 
     //ADMIN
-    /*public List<Booking> getAllBookings()
+    public static List<Booking> getAllBookings()
     {
-
-    }*/
+        Connection conn = null;
+        Statement st = null;
+        List<Booking> out = new ArrayList<>();
+        try
+        {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM prenotazione";
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while(rs.next())
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+        }catch (SQLException e)
+        {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        finally
+        {
+            if(conn != null)
+            {
+                try
+                {
+                    if(st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e)
+                {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
 
 }
 
@@ -429,5 +499,19 @@ enum Status
 {
     ACTIVE,
     DONE,
-    CANCELED,
+    CANCELED;
+
+    public static Status fromString(String status)
+    {
+        switch (status)
+        {
+            case "active":
+                return Status.ACTIVE;
+            case "done":
+                return Status.DONE;
+            case "canceled":
+                return Status.CANCELED;
+        }
+        return null;
+    }
 }
