@@ -1,0 +1,11 @@
+@media only screen and (max-width: 550px) {
+    #body-container {
+        flex-wrap: nowrap;
+        padding: 0px !important;
+        padding-bottom: 10px !important;
+    }
+    .card {
+        width: 90% !important;
+        margin-right: 0px !important;
+    }
+}

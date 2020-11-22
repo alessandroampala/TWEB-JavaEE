@@ -2,53 +2,40 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Dao
-{
-    private static final String url = "jdbc:mysql://localhost:3306/test";
+public class Dao {
+    private static final String url = "jdbc:mysql://localhost:3306/ripetizioni";
     private static final String user = "root";
     private static final String password = "";
 
-    public static void initialize()
-    {
-        try
-        {
+    public static void initialize() {
+        try {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
-        }
-        catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    public static void insertTeacher(String name, String surname)
-    {
+    public static void insertTeacher(String name, String surname) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO docente (nome, cognome) values(?, ?);";
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.setString(2, surname);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -57,33 +44,25 @@ public class Dao
     }
 
     //ADMIN
-    public static void deleteTeacher(Teacher teacher)
-    {
+    public static void deleteTeacher(Teacher teacher) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM docente WHERE id = ?;";
             st = conn.prepareStatement(sql);
             st.setInt(1, teacher.getId());
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -91,33 +70,55 @@ public class Dao
         }
     }
 
-    public static void insertCourse(String name)
-    {
+    private static Teacher getTeacher(int docenteID) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        Teacher out = null;
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT nome, cognome FROM docente WHERE id = ?;";
+            st = conn.prepareStatement(sql);
+            st.setInt(1, docenteID);
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+                out = new Teacher(docenteID, rs.getString("nome"), rs.getString("cognome"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
+
+    public static void insertCourse(String name) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO corso (nome) values(?);";
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -126,33 +127,25 @@ public class Dao
     }
 
     //ADMIN
-    public static void deleteCourse(String course)
-    {
+    public static void deleteCourse(String course) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM corso WHERE nome = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -160,34 +153,26 @@ public class Dao
         }
     }
 
-    public static void insertLesson(String courseName, int teacherId)
-    {
+    public static void insertLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO lezione (corsoID, docenteID) values(?, ?);";
             st = conn.prepareStatement(sql);
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -196,34 +181,26 @@ public class Dao
     }
 
     //ADMIN
-    public static void deleteLesson(String courseName, Teacher teacher)
-    {
+    public static void deleteLesson(String courseName, Teacher teacher) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM lezione WHERE corsoId = ? AND docenteId = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, courseName);
             st.setInt(2, teacher.getId());
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -231,12 +208,40 @@ public class Dao
         }
     }
 
-    public static void insertBooking(String username, int teacherId, String course, int lessonSlot)
-    {
+    public static List<Lesson> getLessons() {
+        Connection conn = null;
+        Statement st = null;
+        List<Lesson> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM lezione;";
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                out.add(new Lesson(getTeacher(rs.getInt("docenteID")), rs.getString("corsoID")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
+
+    public static void insertBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
             st = conn.prepareStatement(sql);
@@ -245,22 +250,16 @@ public class Dao
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -269,12 +268,10 @@ public class Dao
     }
 
     //same as deleteBooking
-    public static void cancelBooking(String username, int teacherId, String course, int lessonSlot)
-    {
+    public static void cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM prenotazione" +
                     " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
@@ -284,22 +281,16 @@ public class Dao
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -308,12 +299,10 @@ public class Dao
     }
 
     //mark booking as done
-    public static void markBooking(String username, int teacherId, String course, int lessonSlot)
-    {
+    public static void markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "START TRANSACTION;" +
                     " UPDATE prenotazione" +
@@ -331,22 +320,16 @@ public class Dao
             st.setString(7, username);
             st.setInt(8, lessonSlot);
             st.executeUpdate();
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -354,38 +337,30 @@ public class Dao
         }
     }
 
-    public static List<Booking> getBookings(String username)
-    {
+    public static List<Booking> getBookings(String username) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT * FROM prenotazione WHERE utenteID = ?";
+            String sql = "SELECT * FROM prenotazione WHERE utenteID = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, username);
-            ResultSet rs = st.executeQuery(sql);
-            while(rs.next())
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -395,37 +370,29 @@ public class Dao
     }
 
     //ADMIN
-    public static List<Booking> getAllBookings()
-    {
+    public static List<Booking> getAllBookings() {
         Connection conn = null;
         Statement st = null;
         List<Booking> out = new ArrayList<>();
-        try
-        {
+        try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT * FROM prenotazione";
+            String sql = "SELECT * FROM prenotazione;";
             st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
-            while(rs.next())
+            while (rs.next())
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-        }catch (SQLException e)
-        {
+        } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-        }
-        finally
-        {
-            if(conn != null)
-            {
-                try
-                {
-                    if(st != null)
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
                         st.close();
                     conn.close();
-                } catch (SQLException e)
-                {
+                } catch (SQLException e) {
                     e.printStackTrace();
                     System.out.println(e.getMessage());
                 }
@@ -436,57 +403,66 @@ public class Dao
 
 }
 
-class User
-{
+class User {
     public String username;
     public String password;
 
-    public User(String username, String password)
-    {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 }
 
-class Teacher
-{
+class Teacher {
     private int id;
     private String name;
     private String surname;
 
-    public Teacher(int id, String name, String surname)
-    {
+    public Teacher(int id, String name, String surname) {
         this.id = id;
         this.name = name;
         this.surname = surname;
     }
 
-    public int getId()
-    {
+    public int getId() {
         return id;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
-    public String getSurname()
-    {
+    public String getSurname() {
         return surname;
     }
 }
 
-class Booking
-{
+class Lesson {
+    private Teacher teacher;
+    private String course;
+
+    public Lesson(Teacher teacher, String course) {
+        this.teacher = teacher;
+        this.course = course;
+    }
+
+    public Teacher getTeacher() {
+        return this.teacher;
+    }
+
+    public String getCourse() {
+        return this.course;
+    }
+}
+
+class Booking {
     public String username;
     int teacherId;
     String course;
     int lessonSlot;
     Status status;
 
-    public Booking(String username, int teacherId, String course, int lessonSlot, Status status)
-    {
+    public Booking(String username, int teacherId, String course, int lessonSlot, Status status) {
         this.username = username;
         this.teacherId = teacherId;
         this.course = course;
@@ -495,16 +471,13 @@ class Booking
     }
 }
 
-enum Status
-{
+enum Status {
     ACTIVE,
     DONE,
     CANCELED;
 
-    public static Status fromString(String status)
-    {
-        switch (status)
-        {
+    public static Status fromString(String status) {
+        switch (status) {
             case "active":
                 return Status.ACTIVE;
             case "done":
