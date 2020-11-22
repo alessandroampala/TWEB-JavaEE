@@ -53,9 +53,7 @@ CREATE TABLE archivioPrenotazione (
     utenteID varchar(100) NOT NULL,
     lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
     status ENUM ('done', 'canceled') NOT NULL,
-    PRIMARY KEY (id),
-    UNIQUE(docenteID, lessonDate),
-    UNIQUE(utenteID, lessonDate)
+    PRIMARY KEY (id)
 );
 
 INSERT into utente (username, password, admin) values ('Emilio','Bruno',1);
@@ -83,8 +81,10 @@ delimiter |
 CREATE TRIGGER archiviaOnDelete BEFORE DELETE ON prenotazione
 FOR EACH ROW
 BEGIN
-    INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
-    VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, 'canceled');
+    IF  (OLD.status = 'active') THEN
+        INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
+        VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, 'canceled');
+    END IF;
 END;
 |
 
@@ -103,6 +103,6 @@ UPDATE prenotazione
 SET status = 'done'
 WHERE id = 1;
 
-DELETE FROM prenotazione where id = 1;
+DELETE FROM prenotazione WHERE id = 1;
 
 COMMIT;
