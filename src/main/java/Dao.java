@@ -401,15 +401,55 @@ public class Dao {
         return out;
     }
 
+    public static User getUser(String username, String userPass) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        User out = null;
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT admin FROM utente WHERE username = ? and password = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, username);
+            st.setString(2, userPass);
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+                out= new User(username, userPass, rs.getBoolean("admin"));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
 }
 
 class User {
     public String username;
     public String password;
+    private boolean admin;
 
-    public User(String username, String password) {
+    public User(String username, String password, boolean admin) {
         this.username = username;
         this.password = password;
+        this.admin = admin;
+    }
+
+    public String getUsername(){
+        return this.username;
+    }
+
+    public boolean getAdmin(){
+        return this.admin;
     }
 }
 

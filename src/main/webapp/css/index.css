@@ -2,6 +2,7 @@
     .modal-dialog {
         max-width: 400px;
     }
+
     .modal-content {
         padding: 1rem;
     }
@@ -14,9 +15,12 @@
         padding-bottom: 10px !important;
     }
 
+    #lessonsContainer {
+        padding-right: 0px !important;
+    }
+
     .card {
         width: 90% !important;
-        margin-right: 0px !important;
     }
 }
 
@@ -27,11 +31,11 @@
 }
 
 @media only screen and (max-width: 250px) {
-    #profile, #login {
+    #profile, #login, p {
         font-size: small;
     }
 
-    #title {
+    #title, h5 {
         font-size: medium;
     }
 }
