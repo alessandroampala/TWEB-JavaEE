@@ -1,11 +1,62 @@
+@media (min-width: 576px) {
+    .modal-dialog {
+        max-width: 400px;
+    }
+    .modal-content {
+        padding: 1rem;
+    }
+}
+
 @media only screen and (max-width: 550px) {
     #body-container {
         flex-wrap: nowrap;
         padding: 0px !important;
         padding-bottom: 10px !important;
     }
+
     .card {
         width: 90% !important;
         margin-right: 0px !important;
     }
 }
+
+@media only screen and (max-width: 370px) {
+    #booking-container table {
+        font-size: small;
+    }
+}
+
+@media only screen and (max-width: 250px) {
+    #profile, #login {
+        font-size: small;
+    }
+
+    #title {
+        font-size: medium;
+    }
+}
+
+#profile, #login {
+    text-decoration: none !important;
+    color: white !important;
+}
+
+
+.close {
+    margin-top: -1.5rem;
+}
+
+.form-title {
+    margin: -2rem 0rem 2rem;
+}
+
+.green {
+    background-color: green;
+    cursor: pointer;
+}
+
+.red {
+    background-color: red;
+    cursor: default;
+}
+
