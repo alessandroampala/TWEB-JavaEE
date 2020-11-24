@@ -11,6 +11,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.1/css/all.css"
           integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/index.css"/>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
+
     <title>Ripetizioni</title>
 </head>
 <body>
@@ -49,6 +52,9 @@
     </div>
     <prenotazione></prenotazione>
     <div v-if="lessons == null" class="d-flex flex-wrap justify-content-center">
+        <img style="width: 70px;" src="res/load.gif" alt="loading">
+    </div>
+    <div v-else-if="lessons === false">
         Not new lessons
     </div>
     <div id="lessonsContainer" v-else class="d-flex flex-wrap justify-content-center pl-3"
@@ -67,7 +73,6 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <script>
     Vue.component('ripetizione', {
         props: ['foto', 'corso', 'nome', 'cognome', 'id'],
@@ -194,7 +199,7 @@
                 if (data.length !== 0) {
                     vm.lessons = data;
                 } else {
-                    vm.lessons = null;
+                    vm.lessons = false;
                 }
             });
         },
