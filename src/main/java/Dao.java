@@ -70,6 +70,36 @@ public class Dao {
         }
     }
 
+    public static List<Teacher> getTeachers() {
+        Connection conn = null;
+        Statement st = null;
+        List<Teacher> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM docente;";
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                out.add(new Teacher(rs.getInt("id"), rs.getString("nome"), rs.getString("Cognome")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
+
     private static Teacher getTeacher(int docenteID) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -153,6 +183,36 @@ public class Dao {
         }
     }
 
+    public static List<Course> getCourses() {
+        Connection conn = null;
+        Statement st = null;
+        List<Course> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM corso;";
+            st = conn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                out.add(new Course(rs.getString("nome")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return out;
+    }
+
     public static void insertLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -218,7 +278,7 @@ public class Dao {
             st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
-                out.add(new Lesson(getTeacher(rs.getInt("docenteID")), rs.getString("corsoID")));
+                out.add(new Lesson(getTeacher(rs.getInt("docenteID")), new Course(rs.getString("corsoID"))));
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -413,7 +473,7 @@ public class Dao {
             st.setString(2, userPass);
             ResultSet rs = st.executeQuery();
             while (rs.next())
-                out= new User(username, userPass, rs.getBoolean("admin"));
+                out = new User(username, userPass, rs.getBoolean("admin"));
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -444,12 +504,24 @@ class User {
         this.admin = admin;
     }
 
-    public String getUsername(){
+    public String getUsername() {
         return this.username;
     }
 
-    public boolean getAdmin(){
+    public boolean getAdmin() {
         return this.admin;
+    }
+}
+
+class Course{
+    private String name;
+
+    public Course(String name){
+        this.name=name;
+    }
+
+    public String getName(){
+        return this.name;
     }
 }
 
@@ -479,9 +551,9 @@ class Teacher {
 
 class Lesson {
     private Teacher teacher;
-    private String course;
+    private Course course;
 
-    public Lesson(Teacher teacher, String course) {
+    public Lesson(Teacher teacher, Course course) {
         this.teacher = teacher;
         this.course = course;
     }
@@ -490,7 +562,7 @@ class Lesson {
         return this.teacher;
     }
 
-    public String getCourse() {
+    public Course getCourse() {
         return this.course;
     }
 }

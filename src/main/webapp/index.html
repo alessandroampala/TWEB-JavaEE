@@ -12,56 +12,27 @@
           integrity="sha384-vp86vTRFVJgpjF9jiIGPEEqYqlDwgyBgEF109VFjmqGmIY/Y4HV4d3Gp2irVfcrp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/index.css"/>
 
-    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
-
     <title>Ripetizioni</title>
 </head>
 <body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <section id="body-container">
-    <navbar loginFlagValue="loginFlag"></navbar>
-    <div v-if="loginFlag == null || loginFlag === true" class="modal fade" id="loginModal" tabindex="-1" role="dialog"
-         aria-labelledby="modal-container"
-         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
-            <div class="modal-content">
-                <div class="modal-header border-bottom-0">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                            aria-hidden="true">&times;</span></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-title text-center">
-                        <h4>Login</h4>
-                    </div>
-                    <div class="d-flex flex-column text-center">
-                        <form>
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="username" v-model="username"
-                                       placeholder="Username">
-                            </div>
-                            <div class="form-group">
-                                <input type="password" class="form-control" id="password" v-model="password"
-                                       placeholder="Password">
-                            </div>
-                            <button type="button" class="btn btn-info btn-block btn-round" onclick="vm.login();">Login
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+    <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
+        <select style="max-width: 250px;" class="form-control m-2">
+            <option v-for="course in courses" :value="course.name">{{course.name}}</option>
+        </select>
+        <select style="max-width: 250px;" class="form-control m-2">
+            <option v-for="teacher in teachers" :value="'Docente-selected-' + teacher.id">{{teacher.name}} {{teacher.surname}}</option>
+        </select>
+    </div>
+    <div id="ripetizioni-container" class="text-center">
+        <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2"
+             v-for="lesson in lessons">
+            <ripetizione v-bind:corso="lesson.course.name" v-bind:nome="lesson.teacher.name"
+                         v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"></ripetizione>
         </div>
-    </div>
-    <prenotazione></prenotazione>
-    <div v-if="lessons == null" class="d-flex flex-wrap justify-content-center">
-        <img style="width: 70px;" src="res/load.gif" alt="loading">
-    </div>
-    <div v-else-if="lessons === false">
-        Not new lessons
-    </div>
-    <div id="lessonsContainer" v-else class="d-flex flex-wrap justify-content-center pl-3"
-         v-for="lesson in lessons">
-        <ripetizione foto="https://www.talkwalker.com/images/2020/blog-headers/image-analysis.png"
-                     v-bind:corso="lesson.course" v-bind:nome="lesson.teacher.name"
-                     v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"></ripetizione>
+        <p v-if="lessonsFlag === false" class="m-2">Non ci sono nuove lezioni.</p>
+        <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
     </div>
 </section>
 
@@ -75,136 +46,65 @@
         crossorigin="anonymous"></script>
 <script>
     Vue.component('ripetizione', {
-        props: ['foto', 'corso', 'nome', 'cognome', 'id'],
-        template: '<div style="width: 250px;" class="card mt-3 mr-3" style="width: 18rem;">\n' +
-            '            <img class="card-img-top" v-bind:src="foto" alt="Immagine Corso">\n' +
-            '            <div class="card-body">\n' +
-            '                <h5 class="card-title">{{corso}}</h5>\n' +
-            '                <p class="card-text" v-bind:id="id">{{nome}} {{cognome}}</p>\n' +
-            '                <a href="javascript:void(0);" class="btn btn-primary" data-toggle="modal" data-target="#booking-container">show</a>\n' +
-            '            </div>\n' +
-            '        </div>'
-    });
-
-    Vue.component('navbar', {
-        props: ['loginFlagValue'],
-        template: '<nav class="navbar navbar-expand-xl navbar-dark bg-dark">\n' +
-            '    <a id="title" class="navbar-brand" href="Controller">Ripetizioni</a>\n' +
-            '    <div  v-if="loginFlagValue === false" class="dropdown ml-auto">\n' +
-            '        <a id="profile" href="javascript:void(0);" class="btn-user media align-items-center" data-toggle="dropdown" data-sidebar="true" aria-expanded="false">\n' +
-            '            <i class="fas fa-user-circle fa-md\t"> Username</i>\n' +
-            '        </a>\n' +
-            '        <ul class="dropdown-menu dropdown-menu-right" role="menu">\n' +
-            '            <a class="dropdown-item" href="javascript:void(0);">Booking</a>\n' +
-            '            <a class="dropdown-item" href="javascript:void(0);">Logout</a>\n' +
-            '        </ul>\n' +
-            '    </div>\n' +
-            '    <div v-if="loginFlagValue == null || loginFlagValue === true" class="ml-auto">\n' +
-            '        <a id="login" class="nav-link" href="javascript:void(0);" data-toggle="modal" data-target="#loginModal">Log In</a>\n' +
-            '    </div>\n' +
-            '</nav>'
-    });
-
-    Vue.component('prenotazione', {
-        template: '<div id="booking-container" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">\n' +
-            '    <div class="modal-dialog modal-dialog-centered" role="document">\n' +
-            '        <div class="modal-content">\n' +
-            '            <div class="modal-header border-bottom-0">\n' +
-            '                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\n' +
-            '            </div>\n' +
-            '            <div class="modal-body">\n' +
-            '                <div class="form-title text-center">\n' +
-            '                    <h4>Prenotazioni</h4>\n' +
-            '                </div>\n' +
-            '                <h5>Materia</h5>\n' +
-            '                <h6>Nome Cognome</h6>\n' +
-            '                <div class="d-flex flex-column text-center">\n' +
-            '                    <table class="table table-bordered table-sm">\n' +
-            '                        <thead>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="col">#</th>\n' +
-            '                                <th scope="col">15-16</th>\n' +
-            '                                <th scope="col">16-17</th>\n' +
-            '                                <th scope="col">17-18</th>\n' +
-            '                                <th scope="col">18-19</th>\n' +
-            '                            </tr>\n' +
-            '                        </thead>\n' +
-            '                        <tbody>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Lunedì</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="red"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Martedì</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Mercoledì</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Giovedì</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Venerdì</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Sabato</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                            <tr>\n' +
-            '                                <th scope="row">Domenica</th>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                                <td class="green"></td>\n' +
-            '                            </tr>\n' +
-            '                        </tbody>\n' +
-            '                    </table>\n' +
-            '                </div>\n' +
-            '                <button type="button" class="btn btn-success btn-lg btn-block">Prenota</button>\n' +
-            '            </div>\n' +
-            '        </div>\n' +
-            '    </div>\n' +
+        props: ['corso', 'nome', 'cognome', 'id'],
+        template: '<div class="card text-center m-2">\n' +
+            '  <div class="card-body">\n' +
+            '    <h5 class="card-title">{{corso}}</h5>\n' +
+            '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
+            '    <a href="#" class="btn btn-primary">Show</a>\n' +
+            '  </div>\n' +
             '</div>'
     });
 
-    var vm = new Vue({
+    new Vue({
         el: "#body-container",
-        data: {loginFlag: true, lessons: null, username: '', password: ''},
+        data: {lessonsFlag: null, lessons: null, courses: null, teachers: null},
         mounted() {
-            $.get("Controller", {
-                action: "lessons"
-            }, function (data) {
-                if (data.length !== 0) {
-                    vm.lessons = data;
-                } else {
-                    vm.lessons = false;
-                }
-            });
+            this.materie();
+            this.docenti();
+            this.lezioni();
         },
         methods: {
+            materie: function () {
+                const vm = this;
+                $.get("Controller", {
+                    action: "materie"
+                }, function (data) {
+                    if (data.length > 1) {
+                        vm.courses = data;
+                    } else {
+                        vm.courses = null;
+                    }
+                });
+            },
+            docenti: function () {
+                const vm = this;
+                $.get("Controller", {
+                    action: "docenti"
+                }, function (data) {
+                    if (data.length > 1) {
+                        vm.teachers = data;
+                    } else {
+                        vm.teachers = null;
+                    }
+                });
+            },
+            lezioni: function () {
+                const vm = this;
+                $.get("Controller", {
+                    action: "lessons"
+                }, function (data) {
+                    if (data.length !== 0) {
+                        vm.lessons = data;
+                        vm.lessonsFlag = true;
+                    } else {
+                        vm.lessonsFlag = false;
+                        vm.lessons = null;
+                    }
+                });
+            },
             login: function () {
+                const vm = this;
                 $.post("Controller", {
                     action: "login",
                     username: vm.username,

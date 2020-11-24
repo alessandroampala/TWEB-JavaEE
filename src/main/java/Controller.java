@@ -43,6 +43,26 @@ public class Controller extends HttpServlet
                 out.flush();
                 return;
             }
+            else if(action.equals("materie")){
+                PrintWriter out = response.getWriter();
+                response.setContentType("application/json;charset=UTF-8");
+                List<Course> courses= Dao.getCourses();
+                courses.add(0, new Course("Seleziona Materia"));
+                Gson gson = new Gson();
+                out.print( gson.toJson(courses));
+                out.flush();
+                return;
+            }
+            else if(action.equals("docenti")){
+                PrintWriter out = response.getWriter();
+                response.setContentType("application/json;charset=UTF-8");
+                List<Teacher> teachers= Dao.getTeachers();
+                teachers.add(0, new Teacher(0, "Seleziona", "Docente"));
+                Gson gson = new Gson();
+                out.print( gson.toJson(teachers));
+                out.flush();
+                return;
+            }
             else if(action.equals("login")){
                 String username = request.getParameter("username");
                 String password = request.getParameter("password");
