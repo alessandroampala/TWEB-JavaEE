@@ -7,6 +7,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -32,8 +33,12 @@ public class Controller extends HttpServlet
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException
     {
+        HttpSession s = request.getSession();
+        String u = (String) s.getAttribute("username");
+        if(u != null)
+            System.out.println("L'username in sessione è: " + u);
+
         String action = request.getParameter("action");
-        RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");
         if(action!=null){
             if(action.equals("lessons")){
                 PrintWriter out = response.getWriter();
@@ -69,11 +74,18 @@ public class Controller extends HttpServlet
                 PrintWriter out = response.getWriter();
                 response.setContentType("application/json;charset=UTF-8");
                 Gson gson = new Gson();
-                out.print( gson.toJson(Dao.getUser(username, password)));
-                out.flush();
+
+                User user = Dao.getUser(username, password);
+                if(user != null) //user exists
+                {
+                    s.setAttribute("username", username);
+                    out.print( gson.toJson(user));
+                    out.flush();
+                }
                 return;
             }
         }
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");
         dispatcher.forward(request, response);
         /*response.setContentType("text/html;charset=UTF-8");
         Dao.insertTeacher("gatto", "matto");*/
