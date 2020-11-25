@@ -1,21 +1,21 @@
 @media screen and (max-width: 600px) {
     .card, .form-control {
-        width: 100%!important;
-        max-width: 100%!important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
 @media screen and (max-width: 400px) {
-    .nav, .nav li{
-        width: 100%!important;
-        margin: 0px!important;
+    .nav, .nav li {
+        width: 100% !important;
+        margin: 0px !important;
     }
 
     .nav li a {
-        border-radius: 0px!important;
+        border-radius: 0px !important;
     }
 }
 
-.nav li{
+.nav li {
     margin: 5px;
 }

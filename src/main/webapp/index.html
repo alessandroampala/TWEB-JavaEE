@@ -24,10 +24,10 @@
             <li class="nav-item">
                 <a class="nav-link active text-center" href="#">Prenota</a>
             </li>
-            <li class="nav-item">
+            <li v-if="loggedIn" class="nav-item">
                 <a class="nav-link text-center" href="#">Prenotazioni</a>
             </li>
-            <li class="nav-item">
+            <li v-if="isAdmin" class="nav-item">
                 <a class="nav-link text-center" href="#">Admin Console</a>
             </li>
         </ul>
