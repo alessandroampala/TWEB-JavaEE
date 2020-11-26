@@ -461,13 +461,13 @@ public class Dao {
         return out;
     }
 
-    public static User getUser(String username, String userPass) {
+    public static jsonMessage getUser(String username, String userPass) {
         Connection conn = null;
         PreparedStatement st = null;
         User out = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT admin FROM utente WHERE username = ? and password = ?;";
+            String sql = "SELECT admin FROM utente WHERE username = ? and BINARY password = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, username);
             st.setString(2, userPass);
@@ -489,13 +489,15 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if(out == null)
+            return new jsonMessage<User>("Username e/o Password sbagliati", out);
+        return new jsonMessage<User>("Ok", out);
     }
 }
 
 class User {
-    public String username;
-    public String password;
+    private String username;
+    private String password;
     private boolean admin;
 
     public User(String username, String password, boolean admin) {
@@ -510,6 +512,10 @@ class User {
 
     public boolean getAdmin() {
         return this.admin;
+    }
+
+    public void setPassword(String password){
+        this.password=User.this.password;
     }
 }
 
@@ -580,6 +586,24 @@ class Booking {
         this.course = course;
         this.lessonSlot = lessonSlot;
         this.status = status;
+    }
+}
+
+class jsonMessage<T>{
+    private String message;
+    private T data;
+
+    public jsonMessage(String message, T data){
+        this.message=message;
+        this.data = data;
+    }
+
+    public String getMessage(){
+        return this.message;
+    }
+
+    public T getData(){
+        return this.data;
     }
 }
 

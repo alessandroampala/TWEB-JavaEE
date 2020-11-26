@@ -37,7 +37,7 @@ CREATE TABLE prenotazione (
     corsoID varchar(100) NOT NULL,
     docenteID int(11) NOT NULL,
     utenteID varchar(100) NOT NULL,
-    lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
+    lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 20),
     status ENUM ('active', 'done', 'canceled') NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (corsoID, docenteID) REFERENCES lezione(corsoID, docenteID) ON DELETE CASCADE ON UPDATE CASCADE,
@@ -91,8 +91,11 @@ END;
 delimiter ;
 
 INSERT into docente (nome, cognome) VALUES ('Rossano', 'Gaeta');
+INSERT into docente (nome, cognome) VALUES ('Luca', 'Rossi');
 INSERT INTO corso (nome) VALUES ('Architettura');
+INSERT INTO corso (nome) VALUES ('Matematica');
 INSERT INTO lezione (corsoID, docenteID) VALUES ('Architettura', 1);
+INSERT INTO lezione (corsoID, docenteID) VALUES ('Matematica', 2);
 INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 20, 'active');
 
 

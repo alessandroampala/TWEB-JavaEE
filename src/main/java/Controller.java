@@ -65,24 +65,27 @@ public class Controller extends HttpServlet {
                 PrintWriter out = response.getWriter();
                 response.setContentType("application/json;charset=UTF-8");
 
-                User user = Dao.getUser(username, password);
-                if (user != null) //user exists
+                jsonMessage<User> jsonData = Dao.getUser(username, password);
+                if (jsonData.getMessage().equals("Ok")) //user exists
                 {
-                    user.password = null;
-                    session.setAttribute("username", user.username);
-                    session.setAttribute("isAdmin", user.getAdmin());
-                    out.print(gson.toJson(user));
-                    out.flush();
+                    jsonData.getData().setPassword(null);
+                    session.setAttribute("username", jsonData.getData().getUsername());
+                    session.setAttribute("isAdmin", jsonData.getData().getAdmin());
                 }
+                out.print(gson.toJson(jsonData));
+                out.flush();
                 return;
             } else if (action.equals("getSessionLogin")) {
                 response.setContentType("application/json;charset=UTF-8");
                 PrintWriter out = response.getWriter();
-                if (!session.isNew() && session.getAttribute("username") != null)
-                    out.print(gson.toJson(new User((String) session.getAttribute("username"), null, (boolean) session.getAttribute("isAdmin"))));
-                else {
+                jsonMessage<User> jsonData;
+                if (!session.isNew() && session.getAttribute("username") != null) {
+                    jsonData = new jsonMessage<>("Sessione valida", new User((String) session.getAttribute("username"), null, (boolean) session.getAttribute("isAdmin")));
+                    out.print(gson.toJson(jsonData));
+                } else {
                     session.invalidate();
-                    out.print(gson.toJson(null));
+                    jsonData = new jsonMessage<>("Sessione invalida", null);
+                    out.print(gson.toJson(jsonData));
                 }
                 return;
             } else if (action.equals("logout")) {

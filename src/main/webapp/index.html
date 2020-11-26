@@ -17,44 +17,44 @@
 <body>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
 <section id="body-container">
-
     <!-- Navbar -->
-    <nav class="d-flex flex-wrap flex-row">
-        <ul class="nav nav-pills mr-auto">
-            <li class="nav-item">
-                <a class="nav-link active text-center" href="#">Prenota</a>
-            </li>
-            <li v-if="loggedIn" class="nav-item">
-                <a class="nav-link text-center" href="#">Prenotazioni</a>
-            </li>
-            <li v-if="isAdmin" class="nav-item">
-                <a class="nav-link text-center" href="#">Admin Console</a>
-            </li>
-        </ul>
-        <template v-if="sessionCheckEnded">
-            <ul v-if="!loggedIn" class="nav ml-auto">
+    <nav class="d-flex flex-wrap flex-row navbar navbar-expand-md navbar-light">
+        <button class="navbar-toggler mb-2 mb-md-0" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse mb-2 mb-md-0" id="navbarNav">
+            <ul class="nav nav-pills mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link text-center btn btn-primary" href="javascript:void(0)" data-toggle="modal"
-                       data-target="#loginModal">Login</a>
+                    <a class="nav-link active text-center" href="#">Prenota</a>
+                </li>
+                <li v-if="loggedIn" class="nav-item">
+                    <a class="nav-link text-center" href="#">Prenotazioni</a>
+                </li>
+                <li v-if="isAdmin" class="nav-item">
+                    <a class="nav-link text-center" href="#">Admin Console</a>
                 </li>
             </ul>
-            <template v-if="loggedIn">
-                <ul class="nav ml-auto">
-                    <li class="nav-item">
-                        <div>Benvenuto, {{username}}</div>
-                    </li>
-                    <li class="nav-item">
-                        <input type="button" class="nav-link text-center btn btn-danger btn-round" value="Logout"
-                               v-on:click="logout()">
-                    </li>
-                </ul>
-            </template>
-        </template>
+        </div>
+        <ul v-if="!loggedIn && sessionCheckEnded" class="nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link text-center btn btn-secondary" href="javascript:void(0)" data-toggle="modal"
+                   data-target="#loginModal">Login</a>
+            </li>
+        </ul>
+        <ul v-if="loggedIn && sessionCheckEnded" class="nav ml-auto">
+            <li class="nav-item d-flex align-items-center justify-content-center">
+                <div class="span12 mb-2 mb-md-0 mr-md-2">Benvenuto, {{username}}</div>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-center btn btn-danger" href="javascript:void(0)" v-on:click="logout">Logout</a>
+            </li>
+        </ul>
     </nav>
     <!-- End Navbar -->
 
     <!-- Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1" role="dialog"
+    <div v-if="!loggedIn && sessionCheckEnded" class="modal fade" id="loginModal" tabindex="-1" role="dialog"
          aria-labelledby="modal-container"
          aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -77,8 +77,8 @@
                                 <input type="password" class="form-control" id="password"
                                        placeholder="Password" v-model="password">
                             </div>
-                            <input type="button" class="btn btn-primary btn-block btn-round" value="Login"
-                                   v-on:click="login()">
+                            <input type="button" class="btn btn-primary btn-block" value="Login"
+                                   v-on:click="login">
                         </form>
                     </div>
                 </div>
@@ -98,14 +98,91 @@
         </select>
     </div>
     <div id="ripetizioni-container" class="text-center">
-        <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2"
-             v-for="lesson in lessons">
-            <ripetizione v-bind:corso="lesson.course.name" v-bind:nome="lesson.teacher.name"
+        <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
+            <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name" v-bind:nome="lesson.teacher.name"
                          v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"></ripetizione>
         </div>
         <p v-if="lessonsFlag === false" class="m-2">Non ci sono nuove lezioni.</p>
         <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
     </div>
+
+    <!-- Modal -->
+    <div v-if="lessonsFlag === true" class="modal fade" id="bookModal" tabindex="-1" role="dialog"
+         aria-labelledby="modal-container"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header border-bottom-0">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                </div>
+                <div class="form-title text-center">
+                    <h4>Prenotazioni</h4>
+                </div>
+                <div class="modal-body">
+                    <h5>Materia</h5>
+                    <h6>Nome Cognome</h6>
+                    <div class="d-flex flex-column text-center">
+                        <form>
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                <tr>
+                                    <th scope="col">#</th>
+                                    <th scope="col">15-16</th>
+                                    <th scope="col">16-17</th>
+                                    <th scope="col">17-18</th>
+                                    <th scope="col">18-19</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <th scope="row">Lun</th>
+                                    <td class="green"></td>
+                                    <td class="red"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Mar</th>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Mer</th>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Gio</th>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">Ven</th>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <input v-if="loggedIn && sessionCheckEnded" type="button" class="btn btn-success btn-block"
+                                   value="Prenota">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Modal -->
+
+
 
 </section>
 
@@ -124,7 +201,7 @@
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{corso}}</h5>\n' +
             '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
-            '    <a href="#" class="btn btn-primary">Show</a>\n' +
+            '    <a class="btn btn-primary" href="javascript:void(0)" data-toggle="modal" data-target="#bookModal">Show</a>\n' +
             '  </div>\n' +
             '</div>'
     });
@@ -141,6 +218,7 @@
             isAdmin: false,
             loggedIn: false,
             sessionCheckEnded: false,
+            message: ""
         },
         mounted() {
             this.materie();
@@ -187,19 +265,42 @@
                     }
                 });
             },
+            reservations: function () {
+                const vm = this;
+                $.get("Controller", {
+                    action: "reservations"
+                }, function (data) {
+                    if (data.length !== 0) {
+                        vm.lessons = data;
+                        vm.lessonsFlag = true;
+                    } else {
+                        vm.lessonsFlag = false;
+                        vm.lessons = null;
+                    }
+                });
+            },
             login: function () {
                 const vm = this;
+                if(vm.username == null || vm.username === "" || vm.password == null || vm.password === ""){
+                    vm.message = "Username e/o Password sbagliati";
+                    return;
+                }
                 $.post("Controller", {
                     action: "login",
                     username: vm.username,
                     password: vm.password
                 }, function (data) {
-                    console.log(data);
-                    vm.username = data.username;
-                    vm.password = null;
-                    vm.isAdmin = data.admin;
-                    vm.loggedIn = true;
-                    $('#loginModal').modal('hide');
+                    if (data.message === "Ok") {
+                        vm.username = data.data.username;
+                        vm.password = null;
+                        vm.isAdmin = data.data.admin;
+                        vm.loggedIn = true;
+                        vm.message = "";
+                        $('#loginModal').modal('hide');
+                    } else {
+                        vm.loggedIn = false;
+                        vm.message = data.message;
+                    }
                 });
             },
             getSessionLogin: function () {
@@ -207,11 +308,10 @@
                 $.post("Controller", {
                     action: "getSessionLogin",
                 }, function (data) {
-                    console.log(data);
-                    if (data !== null) {
-                        vm.username = data.username;
+                    if (data.message === "Sessione valida") {
+                        vm.username = data.data.username;
                         vm.password = null;
-                        vm.isAdmin = data.admin;
+                        vm.isAdmin = data.data.admin;
                         vm.loggedIn = true;
                     }
                     vm.sessionCheckEnded = true;
@@ -219,14 +319,14 @@
             },
             logout: function () {
                 vm = this;
-              $.post("Controller", {
-                  action: "logout",
-              }, function (data) {
-                  vm.username = null;
-                  vm.password = null;
-                  vm.isAdmin = false;
-                  vm.loggedIn = false;
-              });
+                $.post("Controller", {
+                    action: "logout",
+                }, function (data) {
+                    vm.username = null;
+                    vm.password = null;
+                    vm.isAdmin = false;
+                    vm.loggedIn = false;
+                });
             },
         }
     });

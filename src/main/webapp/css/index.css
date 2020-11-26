@@ -1,3 +1,13 @@
+.green {
+    background-color: green;
+    cursor: pointer;
+}
+
+.red {
+    background-color: red;
+    cursor: default;
+}
+
 @media screen and (max-width: 600px) {
     .card, .form-control {
         width: 100% !important;
@@ -5,7 +15,7 @@
     }
 }
 
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 768px) {
     .nav, .nav li {
         width: 100% !important;
         margin: 0px !important;
@@ -14,8 +24,4 @@
     .nav li a {
         border-radius: 0px !important;
     }
-}
-
-.nav li {
-    margin: 5px;
 }
