@@ -268,15 +268,33 @@ public class Dao {
         }
     }
 
-    public static List<Lesson> getLessons() {
+    public static List<Lesson> getLessons(String course, String teacherId) {
         Connection conn = null;
-        Statement st = null;
+        PreparedStatement st = null;
         List<Lesson> out = new ArrayList<>();
         try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT * FROM lezione;";
-            st = conn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+            String sql = "SELECT * FROM lezione";
+
+            if (course != "" && teacherId != "") {
+                sql += " WHERE corsoId = ? AND docenteId = ?;";
+                st = conn.prepareStatement(sql);
+                st.setString(1, course);
+                st.setInt(2, Integer.parseInt(teacherId));
+            } else if (course != "") {
+                sql += " WHERE corsoId = ?;";
+                st = conn.prepareStatement(sql);
+                st.setString(1, course);
+            } else if (teacherId != "") {
+                sql += " WHERE docenteId = ?;";
+                st = conn.prepareStatement(sql);
+                st.setInt(1, Integer.parseInt(teacherId));
+            } else {
+                sql += ";";
+                st = conn.prepareStatement(sql);
+            }
+
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 out.add(new Lesson(getTeacher(rs.getInt("docenteID")), new Course(rs.getString("corsoID"))));
             }
@@ -467,7 +485,7 @@ public class Dao {
         User out = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT admin FROM utente WHERE username = ? and BINARY password = ?;";
+            String sql = "SELECT admin FROM utente WHERE username = BINARY ? and password = BINARY ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, username);
             st.setString(2, userPass);
@@ -489,7 +507,7 @@ public class Dao {
                 }
             }
         }
-        if(out == null)
+        if (out == null)
             return new jsonMessage<User>("Username e/o Password sbagliati", out);
         return new jsonMessage<User>("Ok", out);
     }
@@ -514,19 +532,19 @@ class User {
         return this.admin;
     }
 
-    public void setPassword(String password){
-        this.password=User.this.password;
+    public void setPassword(String password) {
+        this.password = User.this.password;
     }
 }
 
-class Course{
+class Course {
     private String name;
 
-    public Course(String name){
-        this.name=name;
+    public Course(String name) {
+        this.name = name;
     }
 
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 }
@@ -589,20 +607,20 @@ class Booking {
     }
 }
 
-class jsonMessage<T>{
+class jsonMessage<T> {
     private String message;
     private T data;
 
-    public jsonMessage(String message, T data){
-        this.message=message;
+    public jsonMessage(String message, T data) {
+        this.message = message;
         this.data = data;
     }
 
-    public String getMessage(){
+    public String getMessage() {
         return this.message;
     }
 
-    public T getData(){
+    public T getData() {
         return this.data;
     }
 }

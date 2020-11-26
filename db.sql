@@ -37,7 +37,7 @@ CREATE TABLE prenotazione (
     corsoID varchar(100) NOT NULL,
     docenteID int(11) NOT NULL,
     utenteID varchar(100) NOT NULL,
-    lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 20),
+    lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
     status ENUM ('active', 'done', 'canceled') NOT NULL,
     PRIMARY KEY (id),
     FOREIGN KEY (corsoID, docenteID) REFERENCES lezione(corsoID, docenteID) ON DELETE CASCADE ON UPDATE CASCADE,

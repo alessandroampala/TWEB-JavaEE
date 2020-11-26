@@ -40,7 +40,9 @@ public class Controller extends HttpServlet {
             if (action.equals("lessons")) {
                 PrintWriter out = response.getWriter();
                 response.setContentType("application/json;charset=UTF-8");
-                out.print(gson.toJson(Dao.getLessons()));
+                String course = request.getParameter("course");
+                String teacherId = request.getParameter("teacherId");
+                out.print(gson.toJson(Dao.getLessons(course, teacherId)));
                 out.flush();
                 return;
             } else if (action.equals("materie")) {
@@ -90,8 +92,6 @@ public class Controller extends HttpServlet {
                 return;
             } else if (action.equals("logout")) {
                 session.invalidate();
-                //response.setContentType("text/html;charset=UTF-8");
-                //request.getRequestDispatcher("index.html").forward(request, response);
             }
         }
         //RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");

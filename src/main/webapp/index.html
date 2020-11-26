@@ -53,7 +53,7 @@
     </nav>
     <!-- End Navbar -->
 
-    <!-- Modal -->
+    <!-- Login Modal -->
     <div v-if="!loggedIn && sessionCheckEnded" class="modal fade" id="loginModal" tabindex="-1" role="dialog"
          aria-labelledby="modal-container"
          aria-hidden="true">
@@ -87,12 +87,12 @@
     </div>
     <!-- End Modal -->
 
-    <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
-        <select style="max-width: 250px;" class="form-control m-2">
+    <div class="d-flex flex-row justify-content-center flex-wrap p-2">
+        <select style="max-width: 250px;" class="form-control m-2" v-model="selectedCourse" @change="selectChanged()">
             <option v-for="course in courses" :value="course.name">{{course.name}}</option>
         </select>
-        <select style="max-width: 250px;" class="form-control m-2">
-            <option v-for="teacher in teachers" :value="'Docente-selected-' + teacher.id">{{teacher.name}}
+        <select style="max-width: 250px;" class="form-control m-2" v-model="selectedTeacher" @change="selectChanged()">
+            <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
                 {{teacher.surname}}
             </option>
         </select>
@@ -100,13 +100,14 @@
     <div id="ripetizioni-container" class="text-center">
         <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
             <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name" v-bind:nome="lesson.teacher.name"
-                         v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"></ripetizione>
+                         v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"
+                         @lesson-emit="onLessonEmit"></ripetizione>
         </div>
-        <p v-if="lessonsFlag === false" class="m-2">Non ci sono nuove lezioni.</p>
+        <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
         <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
     </div>
 
-    <!-- Modal -->
+    <!-- Calendar Modal -->
     <div v-if="lessonsFlag === true" class="modal fade" id="bookModal" tabindex="-1" role="dialog"
          aria-labelledby="modal-container"
          aria-hidden="true">
@@ -117,54 +118,60 @@
                             aria-hidden="true">&times;</span></button>
                 </div>
                 <div class="form-title text-center">
-                    <h4>Prenotazioni</h4>
+                    <h4>Calendario</h4>
                 </div>
                 <div class="modal-body">
-                    <h5>Materia</h5>
-                    <h6>Nome Cognome</h6>
+                    <h5>{{lessonData.course}}</h5>
+                    <h6>{{lessonData.name}} {{lessonData.surname}}</h6>
                     <div class="d-flex flex-column text-center">
                         <form>
                             <table class="table table-bordered table-sm">
                                 <thead>
                                 <tr>
                                     <th scope="col">#</th>
-                                    <th scope="col">15-16</th>
-                                    <th scope="col">16-17</th>
-                                    <th scope="col">17-18</th>
-                                    <th scope="col">18-19</th>
+                                    <th scope="col">Lun</th>
+                                    <th scope="col">Mar</th>
+                                    <th scope="col">Mer</th>
+                                    <th scope="col">Gio</th>
+                                    <th scope="col">Ven</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr>
-                                    <th scope="row">Lun</th>
+                                    <th scope="row">15-16</th>
                                     <td class="green"></td>
                                     <td class="red"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
-                                </tr>
-                                <tr>
-                                    <th scope="row">Mar</th>
-                                    <td class="green"></td>
-                                    <td class="green"></td>
-                                    <td class="green"></td>
                                     <td class="green"></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Mer</th>
+                                    <th scope="row">16-17</th>
+                                    <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Gio</th>
+                                    <th scope="row">17-18</th>
+                                    <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                 </tr>
                                 <tr>
-                                    <th scope="row">Ven</th>
+                                    <th scope="row">18-19</th>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                    <td class="green"></td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">19-20</th>
+                                    <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
@@ -181,7 +188,6 @@
         </div>
     </div>
     <!-- End Modal -->
-
 
 
 </section>
@@ -201,12 +207,17 @@
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{corso}}</h5>\n' +
             '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
-            '    <a class="btn btn-primary" href="javascript:void(0)" data-toggle="modal" data-target="#bookModal">Show</a>\n' +
+            '    <button class="btn btn-primary" v-on:click="emitNames" data-toggle="modal" data-target="#bookModal">Show</button>\n' +
             '  </div>\n' +
-            '</div>'
+            '</div>',
+        methods: {
+            emitNames: function () {
+                this.$emit('lesson-emit', this.$props.nome, this.$props.cognome, this.$props.corso, this.$props.id);
+            }
+        },
     });
 
-    new Vue({
+    var vuee = new Vue({
         el: "#body-container",
         data: {
             lessonsFlag: null,
@@ -218,19 +229,27 @@
             isAdmin: false,
             loggedIn: false,
             sessionCheckEnded: false,
-            message: ""
+            message: "",
+            lessonData: {
+                name: null,
+                surname: null,
+                course: null,
+                id: null
+            },
+            selectedCourse: "Seleziona Materia",
+            selectedTeacher: 0,
         },
         mounted() {
             this.materie();
             this.docenti();
-            this.lezioni();
+            this.lezioni(null, null);
             this.getSessionLogin();
         },
         methods: {
             materie: function () {
                 const vm = this;
                 $.get("Controller", {
-                    action: "materie"
+                    action: "materie",
                 }, function (data) {
                     if (data.length > 1) {
                         vm.courses = data;
@@ -251,10 +270,12 @@
                     }
                 });
             },
-            lezioni: function () {
+            lezioni: function (corso, docenteId) {
                 const vm = this;
                 $.get("Controller", {
-                    action: "lessons"
+                    action: "lessons",
+                    course: corso,
+                    teacherId: docenteId,
                 }, function (data) {
                     if (data.length !== 0) {
                         vm.lessons = data;
@@ -281,7 +302,7 @@
             },
             login: function () {
                 const vm = this;
-                if(vm.username == null || vm.username === "" || vm.password == null || vm.password === ""){
+                if (vm.username == null || vm.username === "" || vm.password == null || vm.password === "") {
                     vm.message = "Username e/o Password sbagliati";
                     return;
                 }
@@ -327,6 +348,28 @@
                     vm.isAdmin = false;
                     vm.loggedIn = false;
                 });
+            },
+            onLessonEmit: function (name, surname, course, id) {
+                this.lessonData.name = name;
+                this.lessonData.surname = surname;
+                this.lessonData.course = course;
+                this.lessonData.id = id;
+            },
+            selectChanged: function () {
+                let invalidCourse = this.selectedCourse === "Seleziona Materia" || this.selectedCourse === "";
+                let invalidTeacher = this.selectedTeacher === 0 || this.selectedTeacher === "";
+
+                if (this.selectedCourse === "Seleziona Materia")
+                    this.selectedCourse = "";
+                if (this.selectedTeacher === 0)
+                    this.selectedTeacher = "";
+
+                this.lezioni(this.selectedCourse, this.selectedTeacher);
+
+                if (invalidCourse)
+                    this.selectedCourse = "Seleziona Materia";
+                if (invalidTeacher)
+                    this.selectedTeacher = 0;
             },
         }
     });
