@@ -1,6 +1,5 @@
 import com.google.gson.Gson;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -99,22 +98,35 @@ public class Controller extends HttpServlet {
                 case "logout":
                     session.invalidate();
                     break;
-                case "prenotazioniDocente": {
+                case "prenotazioniDocente": { //TODO: mostrare nella tabella rosse anche le celle NON di quella materia MA di quel professore
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
                     String teacherId = request.getParameter("teacherId");
                     jsonMessage<List<Booking>> bookings = Dao.getTeacherBookings(course, Integer.parseInt(teacherId));
                     String username = (String) session.getAttribute("username");
-                    for(Booking b : bookings.getData())
-                    {
-                        if(!b.username.equals(username))
+                    for (Booking b : bookings.getData()) {
+                        if (!b.username.equals(username))
                             b.username = null;
                     }
-
                     out.print(gson.toJson(bookings));
                     out.flush();
                     return;
+                }
+                case "prenotaLezioni": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    if (isLoggedIn(session)) {
+                        String username = (String) session.getAttribute("username");
+                        String teacherID = (String) request.getParameter("teacherId");
+                        String course = (String) request.getParameter("course");
+                        int[] lessonSlots = gson.fromJson((String) request.getParameter("lessonSlots"), int[].class);
+                        for(int i : lessonSlots)
+                            System.out.println(i);
+                        out.print(gson.toJson(Dao.insertBookings(lessonSlots, username, Integer.parseInt(teacherID), course)));
+                    } else {
+                        out.print("Not logged in");
+                    }
                 }
             }
         }

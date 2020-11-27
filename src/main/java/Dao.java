@@ -352,6 +352,51 @@ public class Dao {
         }
     }
 
+    public static String insertBookings(int[] lessonSlots, String username, int teacherId, String course) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        String toReturn = "";
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
+            conn.setAutoCommit(false);
+
+            for (int i = 0; i < lessonSlots.length; i++) {
+                st = conn.prepareStatement(sql);
+                st.setString(1, course);
+                st.setInt(2, teacherId);
+                st.setString(3, username);
+                st.setInt(4, lessonSlots[i]);
+                st.executeUpdate();
+            }
+            System.out.println(st.toString());
+            conn.commit();
+            toReturn = "OK";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+            try {
+                conn.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
+            toReturn = "Lezione già prenotata/non sei disponibile in questo orario/il docente non è disponibile in questo orario";
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        return toReturn;
+    }
+
     //same as deleteBooking
     public static void cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
