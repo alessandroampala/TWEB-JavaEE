@@ -1,3 +1,4 @@
+import java.awt.print.Book;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -421,7 +422,42 @@ public class Dao {
         }
     }
 
-    public static jsonMessage<List<Booking>> getBookings(String username) {
+    public static jsonMessage<List<Booking>> getTeacherBookings(String course, int teacherId) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        List<Booking> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM prenotazione WHERE corsoID = ? AND docenteID = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.setInt(2, teacherId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+                out.add(new Booking(null, rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
+    }
+
+    public static jsonMessage<List<Booking>> getUserBookings(String username) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -489,7 +525,7 @@ public class Dao {
         return new jsonMessage<List<Booking>>("Ok", out);
     }
 
-    public static jsonMessage getUser(String username, String userPass) {
+    public static jsonMessage<User> getUser(String username, String userPass) {
         Connection conn = null;
         PreparedStatement st = null;
         User out = null;

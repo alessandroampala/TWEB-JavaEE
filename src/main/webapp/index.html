@@ -136,11 +136,11 @@
                                     <th scope="col">Ven</th>
                                 </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="calendarTable">
                                 <tr>
                                     <th scope="row">15-16</th>
                                     <td class="green"></td>
-                                    <td class="red"></td>
+                                    <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
                                     <td class="green"></td>
@@ -189,7 +189,9 @@
     </div>
     <!-- End Modal -->
 
-    <div class="toast fade hide" id="errorMessage" data-autohide="false" role="alert" aria-live="assertive" aria-atomic="true" style="width: 96%; max-width: 100%; position: absolute; top: 2%; right: 2%; left: 2%; z-index: 7000;">
+    <div class="toast fade hide" id="errorMessage" data-autohide="false" role="alert" aria-live="assertive"
+         aria-atomic="true"
+         style="width: 96%; max-width: 100%; position: absolute; top: 2%; right: 2%; left: 2%; z-index: 7000;">
         <div class="toast-header">
             <strong class="mr-auto badge badge-danger">ERROR</strong>
             <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -249,6 +251,8 @@
             },
             selectedCourse: "Seleziona Materia",
             selectedTeacher: 0,
+            bookings: null,
+
         },
         mounted() {
             this.materie();
@@ -323,7 +327,7 @@
                 });
             },
             getSessionLogin: function () {
-                vm = this;
+                const vm = this;
                 $.post("Controller", {
                     action: "getSessionLogin",
                 }, function (data) {
@@ -337,8 +341,8 @@
                 });
             },
             logout: function () {
-                vm = this;
-                $.post("Controller", {
+                const vm = this;
+                $.get("Controller", {
                     action: "logout",
                 }, function (data) {
                     vm.username = null;
@@ -352,6 +356,7 @@
                 this.lessonData.surname = surname;
                 this.lessonData.course = course;
                 this.lessonData.id = id;
+                this.prenotazioniDocente();
             },
             selectChanged: function () {
                 let invalidCourse = this.selectedCourse === "Seleziona Materia" || this.selectedCourse === "";
@@ -368,6 +373,35 @@
                     this.selectedCourse = "Seleziona Materia";
                 if (invalidTeacher)
                     this.selectedTeacher = 0;
+            },
+            updateCalendar: function () {
+                const table = document.getElementById('calendarTable');
+
+                //Reset all table cells to green
+                for (let i = 0; i < table.children.length; i++) {
+                    for (let j = 1; j < table.children[i].cells.length; j++)
+                        table.children[i].cells[j].className = "green";
+                }
+
+                //Set red cells
+                if (this.bookings.length > 0)
+                    for (let i = 0; i < this.bookings.length; i++) {
+                        let row = this.bookings[i].lessonSlot % 5;
+                        let column = Math.trunc((this.bookings[i].lessonSlot / 5)) + 1;
+                        table.children[row].cells[column].className = "red";
+                    }
+            },
+            prenotazioniDocente: function (corso, docenteId) {
+                const vm = this;
+                $.get("Controller", {
+                    action: "prenotazioniDocente",
+                    course: vm.lessonData.course,
+                    teacherId: vm.lessonData.id,
+                }, function (data) {
+                    vm.bookings = data.data;
+                    vm.updateCalendar();
+                });
+                return vm.bookings;
             },
         }
     });

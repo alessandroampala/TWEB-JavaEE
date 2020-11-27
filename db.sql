@@ -97,6 +97,9 @@ INSERT INTO corso (nome) VALUES ('Matematica');
 INSERT INTO lezione (corsoID, docenteID) VALUES ('Architettura', 1);
 INSERT INTO lezione (corsoID, docenteID) VALUES ('Matematica', 2);
 INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 20, 'active');
+INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 14, 'active');
+INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 2, 'active');
+INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 0, 'active');
 
 
 -- Transaction to call from code
