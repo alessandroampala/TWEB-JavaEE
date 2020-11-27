@@ -70,7 +70,7 @@ public class Dao {
         }
     }
 
-    public static List<Teacher> getTeachers() {
+    public static jsonMessage<List<Teacher>> getTeachers() {
         Connection conn = null;
         Statement st = null;
         List<Teacher> out = new ArrayList<>();
@@ -97,7 +97,9 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if (out.isEmpty())
+            return new jsonMessage<List<Teacher>>("Docente non trovato", out);
+        return new jsonMessage<List<Teacher>>("Ok", out);
     }
 
     private static Teacher getTeacher(int docenteID) {
@@ -183,7 +185,7 @@ public class Dao {
         }
     }
 
-    public static List<Course> getCourses() {
+    public static jsonMessage<List<Course>> getCourses() {
         Connection conn = null;
         Statement st = null;
         List<Course> out = new ArrayList<>();
@@ -210,7 +212,9 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if (out.isEmpty())
+            return new jsonMessage<List<Course>>("Corsi non trovati", out);
+        return new jsonMessage<List<Course>>("Ok", out);
     }
 
     public static void insertLesson(String courseName, int teacherId) {
@@ -268,7 +272,7 @@ public class Dao {
         }
     }
 
-    public static List<Lesson> getLessons(String course, String teacherId) {
+    public static jsonMessage<List<Lesson>> getLessons(String course, String teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Lesson> out = new ArrayList<>();
@@ -313,7 +317,9 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if (out.isEmpty())
+            return new jsonMessage<List<Lesson>>("Lezioni non trovate", out);
+        return new jsonMessage<List<Lesson>>("Ok", out);
     }
 
     public static void insertBooking(String username, int teacherId, String course, int lessonSlot) {
@@ -415,7 +421,7 @@ public class Dao {
         }
     }
 
-    public static List<Booking> getBookings(String username) {
+    public static jsonMessage<List<Booking>> getBookings(String username) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -444,11 +450,13 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
     }
 
     //ADMIN
-    public static List<Booking> getAllBookings() {
+    public static jsonMessage<List<Booking>> getAllBookings() {
         Connection conn = null;
         Statement st = null;
         List<Booking> out = new ArrayList<>();
@@ -476,7 +484,9 @@ public class Dao {
                 }
             }
         }
-        return out;
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
     }
 
     public static jsonMessage getUser(String username, String userPass) {

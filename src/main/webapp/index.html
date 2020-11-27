@@ -251,8 +251,8 @@
                 $.get("Controller", {
                     action: "materie",
                 }, function (data) {
-                    if (data.length > 1) {
-                        vm.courses = data;
+                    if (data.message === "Ok") {
+                        vm.courses = data.data;
                     } else {
                         vm.courses = null;
                     }
@@ -263,8 +263,8 @@
                 $.get("Controller", {
                     action: "docenti"
                 }, function (data) {
-                    if (data.length > 1) {
-                        vm.teachers = data;
+                    if (data.message === "Ok") {
+                        vm.teachers = data.data;
                     } else {
                         vm.teachers = null;
                     }
@@ -277,22 +277,8 @@
                     course: corso,
                     teacherId: docenteId,
                 }, function (data) {
-                    if (data.length !== 0) {
-                        vm.lessons = data;
-                        vm.lessonsFlag = true;
-                    } else {
-                        vm.lessonsFlag = false;
-                        vm.lessons = null;
-                    }
-                });
-            },
-            reservations: function () {
-                const vm = this;
-                $.get("Controller", {
-                    action: "reservations"
-                }, function (data) {
-                    if (data.length !== 0) {
-                        vm.lessons = data;
+                    if (data.message === "Ok") {
+                        vm.lessons = data.data;
                         vm.lessonsFlag = true;
                     } else {
                         vm.lessonsFlag = false;
