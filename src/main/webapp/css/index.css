@@ -8,6 +8,11 @@
     cursor: default;
 }
 
+.user-booked {
+    background-color: cornflowerblue;
+    cursor: default;
+}
+
 @media screen and (max-width: 600px) {
     .card, .form-control {
         width: 100% !important;

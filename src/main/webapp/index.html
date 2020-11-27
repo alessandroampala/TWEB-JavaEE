@@ -388,7 +388,11 @@
                     for (let i = 0; i < this.bookings.length; i++) {
                         let row = this.bookings[i].lessonSlot % 5;
                         let column = Math.trunc((this.bookings[i].lessonSlot / 5)) + 1;
-                        table.children[row].cells[column].className = "red";
+
+                        if (this.bookings[i].username)
+                            table.children[row].cells[column].className = "user-booked";
+                        else
+                            table.children[row].cells[column].className = "red";
                     }
             },
             prenotazioniDocente: function (corso, docenteId) {

@@ -104,8 +104,15 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
                     String teacherId = request.getParameter("teacherId");
-                    //out.print(gson.toJson(Dsao.getLessonscs(course, teacherId)));
-                    out.print(gson.toJson(Dao.getTeacherBookings(course, Integer.parseInt(teacherId))));
+                    jsonMessage<List<Booking>> bookings = Dao.getTeacherBookings(course, Integer.parseInt(teacherId));
+                    String username = (String) session.getAttribute("username");
+                    for(Booking b : bookings.getData())
+                    {
+                        if(!b.username.equals(username))
+                            b.username = null;
+                    }
+
+                    out.print(gson.toJson(bookings));
                     out.flush();
                     return;
                 }
@@ -116,4 +123,9 @@ public class Controller extends HttpServlet {
         /*response.setContentType("text/html;charset=UTF-8");
         Dao.insertTeacher("gatto", "matto");*/
     }
+
+    private boolean isLoggedIn(HttpSession session) {
+        return !session.isNew() && session.getAttribute("username") != null;
+    }
+
 }

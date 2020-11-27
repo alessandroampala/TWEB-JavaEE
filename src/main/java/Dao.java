@@ -434,7 +434,7 @@ public class Dao {
             st.setInt(2, teacherId);
             ResultSet rs = st.executeQuery();
             while (rs.next())
-                out.add(new Booking(null, rs.getInt("docenteID"),
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
         } catch (SQLException e) {
