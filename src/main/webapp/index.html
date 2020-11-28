@@ -232,7 +232,10 @@
         </div>
 
         <div v-if="navigation === destination.PRENOTAZIONI">
-            <booking v-for="booking in userBookings" :course="booking.course"
+            <h2>Prenotazioni attive</h2>
+            <booking v-for="booking in userBookings"
+                     v-if="userBookings.length > 0"
+                     :course="booking.course"
                      :teacher_name="teachers[booking.teacherId].name"
                      :teacher_surname="teachers[booking.teacherId].surname"
                      v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
@@ -240,6 +243,8 @@
                      :teacher_id="booking.teacherId"
                      @emit-disdici="onEmitDisdici"
                      @emit-effettuata="onEmitEffettuata"></booking>
+            <div v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
+            <h2>Storico Prenotazioni</h2>
         </div>
 
         <div v-if="navigation === destination.ADMIN_CONSOLE">
@@ -351,7 +356,7 @@
         },
     });
 
-    var vuee = new Vue({
+    new Vue({
         el: "#body-container",
         data: {
             lessonsFlag: null,
