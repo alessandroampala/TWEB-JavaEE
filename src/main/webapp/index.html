@@ -28,26 +28,34 @@
                 <li class="nav-item">
                     <a class="nav-link active text-center" href="#">
                         Prenota
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-plus" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
-                            <path fill-rule="evenodd" d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-plus"
+                             fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                            <path fill-rule="evenodd"
+                                  d="M8 7a.5.5 0 0 1 .5.5V9H10a.5.5 0 0 1 0 1H8.5v1.5a.5.5 0 0 1-1 0V10H6a.5.5 0 0 1 0-1h1.5V7.5A.5.5 0 0 1 8 7z"/>
                         </svg>
                     </a>
                 </li>
                 <li v-if="loggedIn" class="nav-item">
                     <a class="nav-link text-center" href="#">
                         Prenotazioni
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar3" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
-                            <path fill-rule="evenodd" d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar3" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+                            <path fill-rule="evenodd"
+                                  d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
                         </svg>
                     </a>
                 </li>
                 <li v-if="isAdmin" class="nav-item">
                     <a class="nav-link text-center" href="#">
                         Admin Console
-                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path fill-rule="evenodd" d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd"
+                                  d="M11.5 2a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM9.05 3a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0V3h9.05zM4.5 7a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM2.05 8a2.5 2.5 0 0 1 4.9 0H16v1H6.95a2.5 2.5 0 0 1-4.9 0H0V8h2.05zm9.45 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-2.45 1a2.5 2.5 0 0 1 4.9 0H16v1h-2.05a2.5 2.5 0 0 1-4.9 0H0v-1h9.05z"/>
                         </svg>
                     </a>
                 </li>
@@ -66,8 +74,10 @@
             <li class="nav-item">
                 <a class="nav-link text-center btn btn-danger" href="javascript:void(0)" v-on:click="logout">
                     Logout
-                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-right-square-fill" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 8.5a.5.5 0 0 1 0-1h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5z"/>
+                    <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-arrow-right-square-fill"
+                         fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd"
+                              d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm2.5 8.5a.5.5 0 0 1 0-1h5.793L8.146 5.354a.5.5 0 1 1 .708-.708l3 3a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708-.708L10.293 8.5H4.5z"/>
                     </svg>
                 </a>
             </li>
@@ -202,7 +212,7 @@
                                 </tbody>
                             </table>
                             <input v-if="loggedIn && sessionCheckEnded" type="button" class="btn btn-success btn-block"
-                                   value="Prenota" @click="prenotaLezioni">
+                                   value="Prenota" @click="prenotaLezioni" :disabled="selectedLessonSlots.length == 0">
                         </form>
                     </div>
                 </div>
@@ -276,6 +286,8 @@
             selectedCourse: "Seleziona Materia",
             selectedTeacher: 0,
             bookings: null,
+            teacherBookings: null,
+            userBookings: null,
             selectedLessonSlots: [],
         },
         mounted() {
@@ -427,19 +439,40 @@
                 }
 
                 //Set red cells
-                if (this.bookings.length > 0)
-                    for (let i = 0; i < this.bookings.length; i++) {
-                        let row = this.bookings[i].lessonSlot % 5;
-                        let column = Math.trunc((this.bookings[i].lessonSlot / 5)) + 1;
+                //if (this.bookings.length > 0)
+                for (let i = 0; i < this.bookings.length; i++) {
+                    let row = this.bookings[i].lessonSlot % 5;
+                    let column = Math.trunc((this.bookings[i].lessonSlot / 5)) + 1;
 
-                        if (this.bookings[i].username)
-                        {
-                            table.children[row].cells[column].className = "user-booked";
-                            table.children[row].cells[column].innerHTML = checkCalendarIcon;
-                        }
-                        else
-                            table.children[row].cells[column].className = "red";
-                    }
+                    if (this.bookings[i].username) {
+                        table.children[row].cells[column].className = "user-booked";
+                        //table.children[row].cells[column].innerHTML = checkCalendarIcon;
+                    } else
+                        table.children[row].cells[column].className = "red";
+                }
+
+                //update based on teacher availability
+                for (let i = 0; i < this.teacherBookings.length; i++) {
+                    let row = this.teacherBookings[i].lessonSlot % 5;
+                    let column = Math.trunc((this.teacherBookings[i].lessonSlot / 5)) + 1;
+
+                    if (table.children[row].cells[column].className === "green")
+                        table.children[row].cells[column].className = "red";
+                    console.log("teacherBooking it")
+                }
+
+                //update based on user availability
+                console.log(this.userBookings.length)
+                for (let i = 0; i < this.userBookings.length; i++) {
+                    let row = this.userBookings[i].lessonSlot % 5;
+                    let column = Math.trunc((this.userBookings[i].lessonSlot / 5)) + 1;
+
+                    console.log(this.userBookings[i].course)
+                    if (this.userBookings[i].course !== this.lessonData.course)
+                        table.children[row].cells[column].className = "red";
+                    table.children[row].cells[column].innerHTML = checkCalendarIcon;
+                    console.log("user it")
+                }
             },
             prenotazioniDocente: function () {
                 const vm = this;
@@ -449,9 +482,26 @@
                     teacherId: vm.lessonData.id,
                 }, function (data) {
                     vm.bookings = data.data;
-                    vm.updateCalendar();
+                    $.get("Controller", {
+                        action: "teacherBooking",
+                        teacherId: vm.lessonData.id,
+                    }, function (data1) {
+                        vm.teacherBookings = data1.data;
+                        console.log(data1);
+                        $.get("Controller", {
+                            action: "userBooking",
+                            teacherId: vm.lessonData.id,
+                        }, function (data2) {
+                            vm.userBookings = data2.data;
+                            console.log(data2);
+                            //now we have bookings, teacherBookings e userBookings and we can update graphics
+                            vm.updateCalendar();
+                        });
+                    });
+
+
                 });
-                return vm.bookings;
+                //return vm.bookings;
             },
             onCellClick: function (i, j) {
                 let lessonSlot = (j - 1) * 5 + i;
@@ -459,26 +509,23 @@
                     '  <path fill-rule="evenodd" d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"/>\n' +
                     '</svg>';
 
-                if(this.loggedIn)
-                {
-                    if(this.selectedLessonSlots.includes(lessonSlot)) //deselected cell
+                if (this.loggedIn) {
+                    if (this.selectedLessonSlots.includes(lessonSlot)) //deselected cell
                     {
                         this.selectedLessonSlots.splice(this.selectedLessonSlots.indexOf(lessonSlot), 1);
                         document.getElementById('calendarTable').children[i].cells[j].innerHTML = "";
-                    }
-                    else if(document.getElementById('calendarTable').children[i].cells[j].className === "green") //if cell green, select it
+                    } else if (document.getElementById('calendarTable').children[i].cells[j].className === "green") //if cell green, select it
                     {
                         this.selectedLessonSlots.push(lessonSlot);
                         document.getElementById('calendarTable').children[i].cells[j].innerHTML = checkIcon;
                     }
                 }
 
-                console.log(this.selectedLessonSlots)
+                //console.log(this.selectedLessonSlots)
             },
             prenotaLezioni: function () {
                 const vm = this;
-                if(vm.selectedLessonSlots.length > 0)
-                {
+                if (vm.selectedLessonSlots.length > 0) {
                     $.post("Controller", {
                         action: "prenotaLezioni",
                         lessonSlots: JSON.stringify(vm.selectedLessonSlots),
@@ -486,8 +533,7 @@
                         course: vm.lessonData.course,
                     }, function (data) {
                         console.log(data);
-                        if(data !== "OK")
-                        {
+                        if (data !== "OK") {
                             $('#errorToast').toast('show');
                             document.getElementById("errorToastText").innerText = data;
                         }

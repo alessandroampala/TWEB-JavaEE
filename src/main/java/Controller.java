@@ -103,12 +103,42 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
                     String teacherId = request.getParameter("teacherId");
-                    jsonMessage<List<Booking>> bookings = Dao.getTeacherBookings(course, Integer.parseInt(teacherId));
+                    jsonMessage<List<Booking>> bookings = Dao.getTeacherCourseBookings(course, Integer.parseInt(teacherId));
                     String username = (String) session.getAttribute("username");
                     for (Booking b : bookings.getData()) {
                         if (!b.username.equals(username))
                             b.username = null;
                     }
+                    out.print(gson.toJson(bookings));
+                    out.flush();
+                    return;
+                }
+                case "teacherBooking": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    String teacherId = request.getParameter("teacherId");
+                    jsonMessage<List<Booking>> bookings = Dao.getTeacherBookings(Integer.parseInt(teacherId));
+
+                    System.out.println("teacherBookings");
+
+                    for (Booking b : bookings.getData()) {
+                        b.username = null;
+                    }
+                    out.print(gson.toJson(bookings));
+                    out.flush();
+                    return;
+                }
+                case "userBooking": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    String username = (String) session.getAttribute("username");
+                    jsonMessage<List<Booking>> bookings = Dao.getUserBookings(username);
+
+                    System.out.println("teacherBookings");
+
+                    /*for (Booking b : bookings.getData()) {
+                        b.username = null;
+                    }*/
                     out.print(gson.toJson(bookings));
                     out.flush();
                     return;
@@ -121,8 +151,6 @@ public class Controller extends HttpServlet {
                         String teacherID = (String) request.getParameter("teacherId");
                         String course = (String) request.getParameter("course");
                         int[] lessonSlots = gson.fromJson((String) request.getParameter("lessonSlots"), int[].class);
-                        for(int i : lessonSlots)
-                            System.out.println(i);
                         out.print(gson.toJson(Dao.insertBookings(lessonSlots, username, Integer.parseInt(teacherID), course)));
                     } else {
                         out.print("Not logged in");

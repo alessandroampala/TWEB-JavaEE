@@ -428,6 +428,7 @@ public class Dao {
         }
     }
 
+    /*
     //mark booking as done
     public static void markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
@@ -465,9 +466,44 @@ public class Dao {
                 }
             }
         }
+    }*/
+
+    public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId)
+    {
+        Connection conn = null;
+        PreparedStatement st = null;
+        List<Booking> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM prenotazione WHERE docenteID = ?;";
+            st = conn.prepareStatement(sql);
+            st.setInt(1, teacherId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
     }
 
-    public static jsonMessage<List<Booking>> getTeacherBookings(String course, int teacherId) {
+    public static jsonMessage<List<Booking>> getTeacherCourseBookings(String course, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -477,6 +513,40 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.setInt(2, teacherId);
+            ResultSet rs = st.executeQuery();
+            while (rs.next())
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
+    }
+
+    public static jsonMessage<List<Booking>> getAllTeacherBookings(String course, int teacherId) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        List<Booking> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM prenotazione WHERE docenteID = ?;";
+            st = conn.prepareStatement(sql);
+            st.setInt(1, teacherId);
             ResultSet rs = st.executeQuery();
             while (rs.next())
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
