@@ -155,6 +155,35 @@ public class Controller extends HttpServlet {
                     } else {
                         out.print("Not logged in");
                     }
+                    return;
+                }
+                case "disdici": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    if (isLoggedIn(session)) {
+                        String username = (String) session.getAttribute("username");
+                        String teacherID = (String) request.getParameter("teacherId");
+                        String course = (String) request.getParameter("course");
+                        String lessonSlot = (String) request.getParameter("lessonSlot");
+                        out.print(gson.toJson(Dao.cancelBooking(username, Integer.parseInt(teacherID), course, Integer.parseInt(lessonSlot))));
+                    } else {
+                        out.print("Not logged in");
+                    }
+                    return;
+                }
+                case "effettuata": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    if (isLoggedIn(session)) {
+                        String username = (String) session.getAttribute("username");
+                        String teacherID = (String) request.getParameter("teacherId");
+                        String course = (String) request.getParameter("course");
+                        String lessonSlot = (String) request.getParameter("lessonSlot");
+                        out.print(gson.toJson(Dao.markBooking(username, Integer.parseInt(teacherID), course, Integer.parseInt(lessonSlot))));
+                    } else {
+                        out.print("Not logged in");
+                    }
+                    return;
                 }
             }
         }

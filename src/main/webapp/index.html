@@ -232,10 +232,14 @@
         </div>
 
         <div v-if="navigation === destination.PRENOTAZIONI">
-            <booking v-for="booking in userBookings" v-bind:course="booking.course"
-                     v-bind:teacher_name="teachers[booking.teacherId].name"
-                     v-bind:teacher_surname="teachers[booking.teacherId].surname"
-                     v-bind:date_hour="booking.lessonSlot"></booking>
+            <booking v-for="booking in userBookings" :course="booking.course"
+                     :teacher_name="teachers[booking.teacherId].name"
+                     :teacher_surname="teachers[booking.teacherId].surname"
+                     v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
+                     v-bind:lesson-slot="booking.lessonSlot"
+                     :teacher_id="booking.teacherId"
+                     @emit-disdici="onEmitDisdici"
+                     @emit-effettuata="onEmitEffettuata"></booking>
         </div>
 
         <div v-if="navigation === destination.ADMIN_CONSOLE">
@@ -311,18 +315,23 @@
     }
 
     Vue.component('booking', {
-        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour'],
+        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot'],
         template: '<div class="card d-flex justify-content-center" style="margin: 25px;">\n' +
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{course}}</h5>\n' +
             '    <p class="card-text">{{teacher_name}} {{teacher_surname}}</p>\n' +
             '    <p class="card-text">{{date_hour}}</p>\n' +
-            '    <a href="#" class="btn btn-warning">Disdici</a>\n' +
-            '    <a href="#" class="btn btn-primary">Effettuata</a>\n' +
+            '    <a href="#" class="btn btn-warning" @click="emitDisdici">Disdici</a>\n' +
+            '    <a href="#" class="btn btn-primary" @click="emitEffettuata">Effettuata</a>\n' +
             '  </div>\n' +
             '</div>',
-        mounted() {
-            this.date_hour = lessonSlotToString(this.date_hour);
+        methods: {
+            emitDisdici: function () {
+                this.$emit('emit-disdici', this.course, this.lessonSlot, this.teacher_id);
+            },
+            emitEffettuata: function () {
+                this.$emit('emit-effettuata', this.course, this.lessonSlot, this.teacher_id);
+            },
         },
     });
 
@@ -658,11 +667,36 @@
                         break;
                     case destination.PRENOTAZIONI:
                         prenotazioniNav.classList.add("active");
+                        this.getUserBookings();
                         break;
                     case destination.ADMIN_CONSOLE:
                         adminConsoleNav.classList.add("active");
                         break;
                 }
+            },
+            onEmitDisdici: function (course, lessonSlot, teacherId) {
+                const vm = this;
+                $.post("Controller", {
+                    action: "disdici",
+                    course: course,
+                    lessonSlot: lessonSlot,
+                    teacherId: teacherId,
+                }, function (data) {
+                    console.log(data);
+                    vm.getUserBookings();
+                });
+            },
+            onEmitEffettuata: function (course, lessonSlot, teacherId) {
+                const vm = this;
+                $.post("Controller", {
+                    action: "effettuata",
+                    course: course,
+                    lessonSlot: lessonSlot,
+                    teacherId: teacherId,
+                }, function (data) {
+                    console.log(data);
+                    vm.getUserBookings();
+                });
             },
         }
     });

@@ -398,7 +398,7 @@ public class Dao {
     }
 
     //same as deleteBooking
-    public static void cancelBooking(String username, int teacherId, String course, int lessonSlot) {
+    public static String cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -411,9 +411,11 @@ public class Dao {
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -428,9 +430,9 @@ public class Dao {
         }
     }
 
-    /*
+
     //mark booking as done
-    public static void markBooking(String username, int teacherId, String course, int lessonSlot) {
+    public static String markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -451,9 +453,11 @@ public class Dao {
             st.setString(7, username);
             st.setInt(8, lessonSlot);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -466,7 +470,7 @@ public class Dao {
                 }
             }
         }
-    }*/
+    }
 
     public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId)
     {
