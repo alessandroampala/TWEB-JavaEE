@@ -26,7 +26,7 @@
         <div class="collapse navbar-collapse mb-2 mb-md-0" id="navbarNav">
             <ul class="nav nav-pills mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link active text-center" href="javascript:void(0)" id="PrenotaNav"
+                    <a class="nav-link active text-center" href="#prenota" id="PrenotaNav"
                        @click="navigateTo(destination.PRENOTA)">
                         Prenota
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-plus"
@@ -39,7 +39,7 @@
                     </a>
                 </li>
                 <li v-if="loggedIn" class="nav-item">
-                    <a class="nav-link text-center" href="javascript:void(0)" id="PrenotazioniNav"
+                    <a class="nav-link text-center" href="#prenotazioni" id="PrenotazioniNav"
                        @click="navigateTo(destination.PRENOTAZIONI)">
                         Prenotazioni
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar3" fill="currentColor"
@@ -52,7 +52,7 @@
                     </a>
                 </li>
                 <li v-if="isAdmin" class="nav-item">
-                    <a class="nav-link text-center" href="javascript:void(0)" id="AdminConsoleNav"
+                    <a class="nav-link text-center" href="#adminConsole" id="AdminConsoleNav"
                        @click="navigateTo(destination.ADMIN_CONSOLE)">
                         Admin Console
                         <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-sliders" fill="currentColor"
@@ -413,7 +413,7 @@
         },
     });
 
-    new Vue({
+    var vuee = new Vue({
         el: "#body-container",
         data: {
             lessonsFlag: null,
@@ -436,7 +436,7 @@
             selectedTeacher: 0,
             bookings: null,
             teacherBookings: null,
-            userBookings: null,
+            userBookings: [],
             selectedLessonSlots: [],
             navigation: destination.PRENOTA,
         },
@@ -446,6 +446,7 @@
             this.lezioni(null, null);
             this.getUserBookings();
             this.getSessionLogin();
+            this.navigateTo();
 
             //FORSE NON SERVE?
             $('#bookModal').on('hidden.bs.modal', function (e) {
@@ -715,7 +716,14 @@
                 });
             },
             navigateTo: function (dest) {
-                this.navigation = dest;
+                if(dest)
+                    this.navigation = dest;
+                else
+                {
+                    this.navigation = window.location.hash.substr(1);
+                }
+
+
                 let prenotaNav = document.getElementById("PrenotaNav");
                 let prenotazioniNav = document.getElementById("PrenotazioniNav");
                 let adminConsoleNav = document.getElementById("AdminConsoleNav");
@@ -727,6 +735,9 @@
                 switch (this.navigation) {
                     case destination.PRENOTA:
                         prenotaNav.classList.add("active");
+                        this.materie();
+                        this.docenti();
+                        this.lezioni(null, null);
                         break;
                     case destination.PRENOTAZIONI:
                         prenotazioniNav.classList.add("active");
@@ -751,14 +762,14 @@
             },
             onEmitEffettuata: function (course, lessonSlot, teacherId) {
                 const vm = this;
-                $.post("Controller", {
-                    action: "effettuata",
-                    course: course,
-                    lessonSlot: lessonSlot,
-                    teacherId: teacherId,
-                }, function (data) {
-                    console.log(data);
-                    vm.getUserBookings();
+                    $.post("Controller", {
+                        action: "effettuata",
+                        course: course,
+                        lessonSlot: lessonSlot,
+                        teacherId: teacherId,
+                    }, function (data) {
+                        console.log(data);
+                        vm.getUserBookings();
                 });
             },
         }
