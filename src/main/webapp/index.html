@@ -390,6 +390,21 @@
         },
     });
 
+    Vue.component('listaAdmin', {
+        props: ['nome', 'id'],
+        template: '<div class="card text-center m-2">\n' +
+            '  <div class="card-body">\n' +
+            '    <h5 v-bind:id="\'delete-\'+ id" class="card-title">{{nome}}</h5>\n' +
+            '    <button class="btn btn-primary" v-on:click="emitDelete">Delete</button>\n' +
+            '  </div>\n' +
+            '</div>',
+        methods: {
+            emitDelete: function () {
+                this.$emit('lesson-emit', this.$props.nome, this.$props.cognome, this.$props.corso, this.$props.id);
+            }
+        },
+    });
+
     new Vue({
         el: "#body-container",
         data: {
@@ -523,6 +538,7 @@
                     vm.password = null;
                     vm.isAdmin = false;
                     vm.loggedIn = false;
+                    vm.navigateTo(destination.PRENOTA)
                 });
             },
             onLessonEmit: function (name, surname, course, id) {
