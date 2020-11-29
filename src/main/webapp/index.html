@@ -139,7 +139,7 @@
                 <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
                     <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name"
                                  v-bind:nome="lesson.teacher.name"
-                                 v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"
+                                 v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id" type="add"
                                  @lesson-emit="onLessonEmit"></ripetizione>
                 </div>
                 <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
@@ -246,7 +246,6 @@
             <div v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
             <h2>Storico Prenotazioni</h2>
         </div>
-
         <div v-if="navigation === destination.ADMIN_CONSOLE">
             <form id="addDocente">
                 <div class="form-group">
@@ -259,7 +258,13 @@
                 </div>
                 <input type="button" class="btn btn-primary" value="Aggiunti">
             </form>
-
+            <form id="deleteDocente">
+            <select style="max-width: 250px;" class="form-control m-2"
+                    @change="selectChanged()">
+                <option v-for="course in courses" :value="course.name">{{course.name}}</option>
+            </select>
+                <input type="button" class="btn btn-danger" value="Rimuovi">
+            </form>
             <form id="addCorso">
                 <div class="form-group">
                     <label for="nomeCorso">Nome Corso</label>
@@ -267,7 +272,15 @@
                 </div>
                 <input type="button" class="btn btn-primary" value="Aggiunti">
             </form>
-
+            <form id="delete Corso">
+            <select style="max-width: 250px;" class="form-control m-2"
+                    @change="selectChanged()">
+                <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
+                    {{teacher.surname}}
+                </option>
+            </select>
+            <input type="button" class="btn btn-danger" value="Rimuovi">
+            </form>
             <form id="addLezione">
                 <div class="form-group">
                     <label for="selectCorso">Corso</label>
@@ -283,6 +296,15 @@
                 </div>
                 <input type="button" class="btn btn-primary" value="Aggiunti">
             </form>
+            <div id="delete-ripetizioni-container" class="text-center">
+                <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
+                    <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name"
+                                 v-bind:nome="lesson.teacher.name"
+                                 v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id" type="delete"></ripetizione>
+                </div>
+                <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
+                <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
+            </div>
         </div>
 
         <!-- Error Toast -->
@@ -375,31 +397,17 @@
     });
 
     Vue.component('ripetizione', {
-        props: ['corso', 'nome', 'cognome', 'id'],
+        props: ['corso', 'nome', 'cognome', 'id', 'type'],
         template: '<div class="card text-center m-2">\n' +
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{corso}}</h5>\n' +
             '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
-            '    <button class="btn btn-primary" v-on:click="emitNames" data-toggle="modal" data-target="#bookModal">Show</button>\n' +
-            '  </div>\n' +
+            '    <button v-if="type !== \'delete\'" class="btn btn-primary" v-on:click="emitNames" data-toggle="modal" data-target="#bookModal">Show</button>\n' +
+            '    <button v-if="type === \'delete\'" class="btn btn-danger" v-on:click="">Delete</button>\n' +
+            '</div>\n' +
             '</div>',
         methods: {
             emitNames: function () {
-                this.$emit('lesson-emit', this.$props.nome, this.$props.cognome, this.$props.corso, this.$props.id);
-            }
-        },
-    });
-
-    Vue.component('listaAdmin', {
-        props: ['nome', 'id'],
-        template: '<div class="card text-center m-2">\n' +
-            '  <div class="card-body">\n' +
-            '    <h5 v-bind:id="\'delete-\'+ id" class="card-title">{{nome}}</h5>\n' +
-            '    <button class="btn btn-primary" v-on:click="emitDelete">Delete</button>\n' +
-            '  </div>\n' +
-            '</div>',
-        methods: {
-            emitDelete: function () {
                 this.$emit('lesson-emit', this.$props.nome, this.$props.cognome, this.$props.corso, this.$props.id);
             }
         },
