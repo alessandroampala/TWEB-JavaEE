@@ -248,7 +248,41 @@
         </div>
 
         <div v-if="navigation === destination.ADMIN_CONSOLE">
+            <form id="addDocente">
+                <div class="form-group">
+                    <label for="nomeDocente">Nome Docente</label>
+                    <input type="text" class="form-control" id="nomeDocente" placeholder="Nome Docente">
+                </div>
+                <div class="form-group">
+                    <label for="cognomeDocente">Cognome Docente</label>
+                    <input type="text" class="form-control" id="cognomeDocente" placeholder="Cognome Docente">
+                </div>
+                <input type="button" class="btn btn-primary" value="Aggiunti">
+            </form>
 
+            <form id="addCorso">
+                <div class="form-group">
+                    <label for="nomeCorso">Nome Corso</label>
+                    <input type="text" class="form-control" id="nomeCorso" placeholder="Nome Corso">
+                </div>
+                <input type="button" class="btn btn-primary" value="Aggiunti">
+            </form>
+
+            <form id="addLezione">
+                <div class="form-group">
+                    <label for="selectCorso">Corso</label>
+                    <select class="form-control" id="selectCorso">
+                        <option>Default select</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="selectDocente">Docente</label>
+                    <select class="form-control" id="selectDocente">
+                        <option>Default select</option>
+                    </select>
+                </div>
+                <input type="button" class="btn btn-primary" value="Aggiunti">
+            </form>
         </div>
 
         <!-- Error Toast -->
@@ -387,8 +421,8 @@
             this.materie();
             this.docenti();
             this.lezioni(null, null);
-            this.getSessionLogin();
             this.getUserBookings();
+            this.getSessionLogin();
 
             //FORSE NON SERVE?
             $('#bookModal').on('hidden.bs.modal', function (e) {
