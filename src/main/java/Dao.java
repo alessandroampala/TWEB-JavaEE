@@ -490,8 +490,7 @@ public class Dao {
         }
     }
 
-    public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId)
-    {
+    public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -594,7 +593,7 @@ public class Dao {
         return new jsonMessage<List<Booking>>("Ok", out);
     }
 
-    public static jsonMessage<List<Booking>> getUserBookings(String username) {
+    public static jsonMessage<List<Booking>> getUserBookings(String username, boolean isAndroid) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -604,10 +603,17 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
-            while (rs.next())
-                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
-                        rs.getString("corsoID"), rs.getInt("lessonDate"),
-                        Status.fromString(rs.getString("status"))));
+            if (isAndroid) {
+                while (rs.next())
+                    out.add(new Booking(rs.getString("utenteID"), getTeacher(rs.getInt("docenteID")),
+                            rs.getString("corsoID"), rs.getInt("lessonDate"),
+                            Status.fromString(rs.getString("status"))));
+            } else {
+                while (rs.next())
+                    out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                            rs.getString("corsoID"), rs.getInt("lessonDate"),
+                            Status.fromString(rs.getString("status"))));
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -775,10 +781,11 @@ class Lesson {
 }
 
 class Booking {
-    public String username;
-    int teacherId;
-    String course;
-    int lessonSlot;
+    private String username;
+    private int teacherId;
+    private Teacher teacher = null;
+    private String course;
+    private int lessonSlot;
     Status status;
 
     public Booking(String username, int teacherId, String course, int lessonSlot, Status status) {
@@ -787,6 +794,34 @@ class Booking {
         this.course = course;
         this.lessonSlot = lessonSlot;
         this.status = status;
+    }
+
+    public Booking(String username, Teacher teacher, String course, int lessonSlot, Status status) {
+        this.username = username;
+        this.teacher = teacher;
+        this.course = course;
+        this.lessonSlot = lessonSlot;
+        this.status = status;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public int getLessonSlot() {
+        return lessonSlot;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
 

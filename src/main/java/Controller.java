@@ -39,8 +39,7 @@ public class Controller extends HttpServlet {
         String action = request.getParameter("action");
         if (action != null) {
 
-            if(action.contains("admin"))
-            {
+            if (action.contains("admin")) {
                 RequestDispatcher dispatcher = request.getRequestDispatcher("AdminController");
                 dispatcher.forward(request, response);
             }
@@ -120,8 +119,8 @@ public class Controller extends HttpServlet {
                     jsonMessage<List<Booking>> bookings = Dao.getTeacherCourseBookings(course, Integer.parseInt(teacherId));
                     String username = (String) session.getAttribute("username");
                     for (Booking b : bookings.getData()) {
-                        if (!b.username.equals(username))
-                            b.username = null;
+                        if (!b.getUsername().equals(username))
+                            b.setUsername(null);
                     }
                     out.print(gson.toJson(bookings));
                     out.flush();
@@ -137,7 +136,7 @@ public class Controller extends HttpServlet {
                     System.out.println("teacherBookings");
 
                     for (Booking b : bookings.getData()) {
-                        b.username = null;
+                        b.setUsername(null);
                     }
                     out.print(gson.toJson(bookings));
                     out.flush();
@@ -148,7 +147,12 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String username = (String) session.getAttribute("username");
-                    jsonMessage<List<Booking>> bookings = Dao.getUserBookings(username);
+                    String isAndroid = request.getParameter("isAndroid");
+                    jsonMessage<List<Booking>> bookings;
+                    if(isAndroid!=null)
+                        bookings = Dao.getUserBookings(username, true);
+                    else
+                        bookings = Dao.getUserBookings(username, false);
 
                     System.out.println("teacherBookings");
 
