@@ -7,17 +7,23 @@ public class Dao {
     private static final String url = "jdbc:mysql://localhost:3306/ripetizioni";
     private static final String user = "root";
     private static final String password = "";
+    private static boolean initialized = false;
 
     public static void initialize() {
         try {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
+            initialized = true;
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    public static void insertTeacher(String name, String surname) {
+    public static boolean isInitialized() {
+        return initialized;
+    }
+
+    public static String insertTeacher(String name, String surname) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -27,9 +33,11 @@ public class Dao {
             st.setString(1, name);
             st.setString(2, surname);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -45,18 +53,20 @@ public class Dao {
     }
 
     //ADMIN
-    public static void deleteTeacher(Teacher teacher) {
+    public static String deleteTeacher(int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM docente WHERE id = ?;";
             st = conn.prepareStatement(sql);
-            st.setInt(1, teacher.getId());
+            st.setInt(1, teacherId);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -133,7 +143,7 @@ public class Dao {
         return out;
     }
 
-    public static void insertCourse(String name) {
+    public static String insertCourse(String name) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -142,9 +152,11 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -160,7 +172,7 @@ public class Dao {
     }
 
     //ADMIN
-    public static void deleteCourse(String course) {
+    public static String deleteCourse(String course) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -169,9 +181,11 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -218,7 +232,7 @@ public class Dao {
         return new jsonMessage<List<Course>>("Ok", out);
     }
 
-    public static void insertLesson(String courseName, int teacherId) {
+    public static String insertLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -228,9 +242,11 @@ public class Dao {
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -246,7 +262,7 @@ public class Dao {
     }
 
     //ADMIN
-    public static void deleteLesson(String courseName, Teacher teacher) {
+    public static String deleteLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
         try {
@@ -254,11 +270,13 @@ public class Dao {
             String sql = "DELETE FROM lezione WHERE corsoId = ? AND docenteId = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, courseName);
-            st.setInt(2, teacher.getId());
+            st.setInt(2, teacherId);
             st.executeUpdate();
+            return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            return "ERROR";
         } finally {
             if (conn != null) {
                 try {

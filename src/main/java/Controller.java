@@ -1,5 +1,6 @@
 import com.google.gson.Gson;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +15,8 @@ import java.util.List;
 @WebServlet(name = "Controller", urlPatterns = {"/Controller"})
 public class Controller extends HttpServlet {
     public void init(ServletConfig conf) throws ServletException {
-        Dao.initialize();
+        if (!Dao.isInitialized())
+            Dao.initialize();
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -36,6 +38,13 @@ public class Controller extends HttpServlet {
 
         String action = request.getParameter("action");
         if (action != null) {
+
+            if(action.contains("admin"))
+            {
+                RequestDispatcher dispatcher = request.getRequestDispatcher("AdminController");
+                dispatcher.forward(request, response);
+            }
+
             switch (action) {
                 case "lessons": {
                     PrintWriter out = response.getWriter();
@@ -44,6 +53,7 @@ public class Controller extends HttpServlet {
                     String teacherId = request.getParameter("teacherId");
                     out.print(gson.toJson(Dao.getLessons(course, teacherId)));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "materie": {
@@ -53,6 +63,7 @@ public class Controller extends HttpServlet {
                     courses.getData().add(0, new Course("Seleziona Materia"));
                     out.print(gson.toJson(courses));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "docenti": {
@@ -62,6 +73,7 @@ public class Controller extends HttpServlet {
                     teachers.getData().add(0, new Teacher(0, "Seleziona", "Docente"));
                     out.print(gson.toJson(teachers));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "login": {
@@ -79,6 +91,7 @@ public class Controller extends HttpServlet {
                     }
                     out.print(gson.toJson(jsonData));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "getSessionLogin": {
@@ -93,12 +106,13 @@ public class Controller extends HttpServlet {
                         jsonData = new jsonMessage<>("Sessione invalida", null);
                         out.print(gson.toJson(jsonData));
                     }
+                    out.close();
                     return;
                 }
                 case "logout":
                     session.invalidate();
                     break;
-                case "prenotazioniDocente": { //TODO: mostrare nella tabella rosse anche le celle NON di quella materia MA di quel professore
+                case "prenotazioniDocente": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
@@ -111,6 +125,7 @@ public class Controller extends HttpServlet {
                     }
                     out.print(gson.toJson(bookings));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "teacherBooking": {
@@ -126,6 +141,7 @@ public class Controller extends HttpServlet {
                     }
                     out.print(gson.toJson(bookings));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "userBooking": {
@@ -141,6 +157,7 @@ public class Controller extends HttpServlet {
                     }*/
                     out.print(gson.toJson(bookings));
                     out.flush();
+                    out.close();
                     return;
                 }
                 case "prenotaLezioni": {
@@ -155,6 +172,7 @@ public class Controller extends HttpServlet {
                     } else {
                         out.print("Not logged in");
                     }
+                    out.close();
                     return;
                 }
                 case "disdici": {
@@ -169,6 +187,7 @@ public class Controller extends HttpServlet {
                     } else {
                         out.print("Not logged in");
                     }
+                    out.close();
                     return;
                 }
                 case "effettuata": {
@@ -183,6 +202,7 @@ public class Controller extends HttpServlet {
                     } else {
                         out.print("Not logged in");
                     }
+                    out.close();
                     return;
                 }
             }
@@ -193,8 +213,12 @@ public class Controller extends HttpServlet {
         Dao.insertTeacher("gatto", "matto");*/
     }
 
-    private boolean isLoggedIn(HttpSession session) {
+    public static boolean isLoggedIn(HttpSession session) {
         return !session.isNew() && session.getAttribute("username") != null;
+    }
+
+    public static boolean isAdmin(HttpSession session) {
+        return (boolean) session.getAttribute("isAdmin");
     }
 
 }
