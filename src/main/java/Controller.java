@@ -149,12 +149,28 @@ public class Controller extends HttpServlet {
                     String username = (String) session.getAttribute("username");
                     String isAndroid = request.getParameter("isAndroid");
                     jsonMessage<List<Booking>> bookings;
-                    if(isAndroid!=null)
+                    if (isAndroid != null)
                         bookings = Dao.getUserBookings(username, true);
                     else
                         bookings = Dao.getUserBookings(username, false);
 
                     System.out.println("teacherBookings");
+
+                    /*for (Booking b : bookings.getData()) {
+                        b.username = null;
+                    }*/
+                    out.print(gson.toJson(bookings));
+                    out.flush();
+                    out.close();
+                    return;
+                }
+                case "oldUserBookings": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+                    String username = (String) session.getAttribute("username");
+                    jsonMessage<List<Booking>> bookings;
+
+                    bookings = Dao.getOldUserBookings(username);
 
                     /*for (Booking b : bookings.getData()) {
                         b.username = null;

@@ -244,7 +244,17 @@
                      @emit-disdici="onEmitDisdici"
                      @emit-effettuata="onEmitEffettuata"></booking>
             <div v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
-            <h2>Storico Prenotazioni</h2>
+            <div v-if="oldUserBooking.length !== 0">
+                <h2>Storico Prenotazioni</h2>
+                <old-booking v-for="booking in oldUserBooking"
+                         v-if="oldUserBooking.length > 0"
+                         :course="booking.course"
+                         :teacher_name="teachers[booking.teacherId].name"
+                         :teacher_surname="teachers[booking.teacherId].surname"
+                         v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
+                         :status="booking.status"></old-booking>
+            </div>
+
         </div>
         <div v-if="navigation === destination.ADMIN_CONSOLE">
             <form id="addDocente">
@@ -401,6 +411,18 @@
         },
     });
 
+    Vue.component('old-booking', {
+        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'status'],
+        template: '<div class="card d-flex justify-content-center" style="margin: 25px;">\n' +
+            '  <div class="card-body">\n' +
+            '    <h5 class="card-title">{{course}}</h5>\n' +
+            '    <p class="card-text">{{teacher_name}} {{teacher_surname}}</p>\n' +
+            '    <p class="card-text">{{date_hour}}</p>\n' +
+            '    <p class="card-text">{{status}}</p>\n' +
+            '  </div>\n' +
+            '</div>',
+    });
+
     Vue.component('ripetizione', {
         props: ['corso', 'nome', 'cognome', 'id', 'type'],
         template: '<div class="card text-center m-2">\n' +
@@ -422,7 +444,7 @@
         },
     });
 
-    new Vue({
+    var vuee = new Vue({
         el: "#body-container",
         data: {
             lessonsFlag: null,
@@ -446,6 +468,7 @@
             bookings: null,
             teacherBookings: null,
             userBookings: null,
+            oldUserBooking: [],
             selectedLessonSlots: [],
             navigation: destination.PRENOTA,
             adminForm: {
@@ -701,7 +724,7 @@
                         teacherId: vm.lessonData.id,
                         course: vm.lessonData.course,
                     }, function (data) {
-                        console.log(data);
+                        //console.log(data);
                         if (data !== "OK") {
                             $('#errorToast').toast('show');
                             document.getElementById("errorToastText").innerText = data;
@@ -720,12 +743,20 @@
                 const vm = this
                 $.get("Controller", {
                     action: "userBooking",
-                    //teacherId: vm.lessonData.id,
                 }, function (data) {
                     vm.userBookings = data.data;
                     vm.userBookings.sort((a, b) => {
                         return a.lessonSlot - b.lessonSlot
                     });
+                });
+            },
+            getOldUserBookings: function () {
+                const vm = this
+                $.get("Controller", {
+                    action: "oldUserBookings",
+                }, function (data) {
+                    vm.oldUserBooking = data.data;
+                    console.log(vm.oldUserBooking)
                 });
             },
             navigateTo: function (dest) {
@@ -749,6 +780,7 @@
                     case destination.PRENOTAZIONI:
                         prenotazioniNav.classList.add("active");
                         this.getUserBookings();
+                        this.getOldUserBookings();
                         break;
                     case destination.ADMIN_CONSOLE:
                         adminConsoleNav.classList.add("active");
@@ -763,8 +795,9 @@
                     lessonSlot: lessonSlot,
                     teacherId: teacherId,
                 }, function (data) {
-                    console.log(data);
+                    //console.log(data);
                     vm.getUserBookings();
+                    vm.getOldUserBookings();
                 });
             },
             onEmitEffettuata: function (course, lessonSlot, teacherId) {
@@ -777,6 +810,7 @@
                 }, function (data) {
                     console.log(data);
                     vm.getUserBookings();
+                    vm.getOldUserBookings();
                 });
             },
             adminInsertTeacher: function () {
@@ -858,7 +892,7 @@
                     });
                 }
             },
-            adminDeleteLesson: function(course, id) {
+            adminDeleteLesson: function (course, id) {
                 const vm = this;
                 //add other checks, maybe with regex
                 if (vm.loggedIn && vm.isAdmin) {

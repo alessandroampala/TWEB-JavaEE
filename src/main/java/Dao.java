@@ -634,6 +634,43 @@ public class Dao {
         return new jsonMessage<List<Booking>>("Ok", out);
     }
 
+    public static jsonMessage<List<Booking>> getOldUserBookings(String username) {
+        Connection conn = null;
+        PreparedStatement st = null;
+        List<Booking> out = new ArrayList<>();
+        try {
+            conn = DriverManager.getConnection(url, user, password);
+            String sql = "SELECT * FROM archivioPrenotazione WHERE utenteID = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, username);
+            ResultSet rs = st.executeQuery();
+
+            while (rs.next())
+                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+
+        } catch (
+                SQLException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        } finally {
+            if (conn != null) {
+                try {
+                    if (st != null)
+                        st.close();
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println(e.getMessage());
+                }
+            }
+        }
+        if (out.isEmpty())
+            return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
+        return new jsonMessage<List<Booking>>("Ok", out);
+    }
+
     //ADMIN
     public static jsonMessage<List<Booking>> getAllBookings() {
         Connection conn = null;
