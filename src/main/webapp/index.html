@@ -231,10 +231,9 @@
             <!-- End Modal -->
         </div>
 
-        <div v-if="navigation === destination.PRENOTAZIONI">
-            <h2>Prenotazioni attive</h2>
-            <booking v-for="booking in userBookings"
-                     v-if="userBookings.length > 0"
+        <div v-if="navigation === destination.PRENOTAZIONI" class="d-flex flex-column justify-content-center p-2">
+            <booking v-if="userBookings.length > 0"
+                     v-for="booking in userBookings"
                      :course="booking.course"
                      :teacher_name="teachers[booking.teacherId].name"
                      :teacher_surname="teachers[booking.teacherId].surname"
@@ -242,19 +241,17 @@
                      v-bind:lesson-slot="booking.lessonSlot"
                      :teacher_id="booking.teacherId"
                      @emit-disdici="onEmitDisdici"
-                     @emit-effettuata="onEmitEffettuata"></booking>
-            <div v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
-            <div v-if="oldUserBooking.length !== 0">
-                <h2>Storico Prenotazioni</h2>
-                <old-booking v-for="booking in oldUserBooking"
-                         v-if="oldUserBooking.length > 0"
-                         :course="booking.course"
-                         :teacher_name="teachers[booking.teacherId].name"
-                         :teacher_surname="teachers[booking.teacherId].surname"
-                         v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
-                         :status="booking.status"></old-booking>
-            </div>
-
+                     @emit-effettuata="onEmitEffettuata"
+                     :status="null"></booking>
+            <div class="text-center" v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
+            <booking v-if="oldUserBooking.length > 0"
+                     v-for="booking in oldUserBooking"
+                     :course="booking.course"
+                     :teacher_name="teachers[booking.teacherId].name"
+                     :teacher_surname="teachers[booking.teacherId].surname"
+                     v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
+                     v-bind:lesson-slot="booking.lessonSlot"
+                     :status="booking.status"></booking>
         </div>
         <div v-if="navigation === destination.ADMIN_CONSOLE">
             <form id="addDocente">
@@ -391,14 +388,15 @@
     }
 
     Vue.component('booking', {
-        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot'],
-        template: '<div class="card d-flex justify-content-center" style="margin: 25px;">\n' +
+        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot', 'status'],
+        template: '<div class="card m-2">\n' +
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{course}}</h5>\n' +
             '    <p class="card-text">{{teacher_name}} {{teacher_surname}}</p>\n' +
             '    <p class="card-text">{{date_hour}}</p>\n' +
-            '    <a href="#" class="btn btn-warning" @click="emitDisdici">Disdici</a>\n' +
-            '    <a href="#" class="btn btn-primary" @click="emitEffettuata">Effettuata</a>\n' +
+            '    <p v-if="status !== null" class="card-text">{{status}}</p>\n' +
+            '    <a v-if="status === null" href="#" class="btn btn-warning" @click="emitDisdici">Disdici</a>\n' +
+            '    <a v-if="status === null" href="#" class="btn btn-primary" @click="emitEffettuata">Effettuata</a>\n' +
             '  </div>\n' +
             '</div>',
         methods: {
@@ -411,21 +409,9 @@
         },
     });
 
-    Vue.component('old-booking', {
-        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'status'],
-        template: '<div class="card d-flex justify-content-center" style="margin: 25px;">\n' +
-            '  <div class="card-body">\n' +
-            '    <h5 class="card-title">{{course}}</h5>\n' +
-            '    <p class="card-text">{{teacher_name}} {{teacher_surname}}</p>\n' +
-            '    <p class="card-text">{{date_hour}}</p>\n' +
-            '    <p class="card-text">{{status}}</p>\n' +
-            '  </div>\n' +
-            '</div>',
-    });
-
     Vue.component('ripetizione', {
         props: ['corso', 'nome', 'cognome', 'id', 'type'],
-        template: '<div class="card text-center m-2">\n' +
+        template: '<div id="ripetizioni" class="card text-center m-2">\n' +
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{corso}}</h5>\n' +
             '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
@@ -683,7 +669,7 @@
                         }, function (data2) {
                             vm.userBookings = data2.data;
                             vm.userBookings.sort((a, b) => {
-                                return a.lessonSlot - b.lessonSlot
+                                return b.lessonSlot - a.lessonSlot
                             });
                             //console.log(data2);
                             //now we have bookings, teacherBookings e userBookings and we can update graphics
@@ -746,7 +732,7 @@
                 }, function (data) {
                     vm.userBookings = data.data;
                     vm.userBookings.sort((a, b) => {
-                        return a.lessonSlot - b.lessonSlot
+                        return b.lessonSlot - a.lessonSlot
                     });
                 });
             },
@@ -756,6 +742,9 @@
                     action: "oldUserBookings",
                 }, function (data) {
                     vm.oldUserBooking = data.data;
+                    vm.oldUserBooking.sort((a, b) => {
+                        return b.lessonSlot - a.lessonSlot
+                    });
                     console.log(vm.oldUserBooking)
                 });
             },
