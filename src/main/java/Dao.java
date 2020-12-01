@@ -455,30 +455,40 @@ public class Dao {
         PreparedStatement st = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql = "START TRANSACTION;" +
-                    " UPDATE prenotazione" +
-                    " SET status = 'done'" +
-                    " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;" +
-                    " DELETE FROM prenotazione where corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;" +
-                    " COMMIT;";
+            String sql =" UPDATE prenotazione" +
+                        " SET status = 'done'" +
+                        " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            conn.setAutoCommit(false);
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.setInt(2, teacherId);
             st.setString(3, username);
             st.setInt(4, lessonSlot);
-            st.setString(5, course);
-            st.setInt(6, teacherId);
-            st.setString(7, username);
-            st.setInt(8, lessonSlot);
             st.executeUpdate();
+
+            sql =" DELETE FROM prenotazione where corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            st = conn.prepareStatement(sql);
+            st.setString(1, course);
+            st.setInt(2, teacherId);
+            st.setString(3, username);
+            st.setInt(4, lessonSlot);
+            st.executeUpdate();
+
+            conn.commit();
             return "OK";
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
+            try {
+                conn.rollback();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             return "ERROR";
         } finally {
             if (conn != null) {
                 try {
+                    conn.setAutoCommit(true);
                     if (st != null)
                         st.close();
                     conn.close();
