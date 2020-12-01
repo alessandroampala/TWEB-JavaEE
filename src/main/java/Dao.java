@@ -634,7 +634,7 @@ public class Dao {
         return new jsonMessage<List<Booking>>("Ok", out);
     }
 
-    public static jsonMessage<List<Booking>> getOldUserBookings(String username) {
+    public static jsonMessage<List<Booking>> getOldUserBookings(String username, boolean isAndroid) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -645,11 +645,17 @@ public class Dao {
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
 
-            while (rs.next())
-                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
-                        rs.getString("corsoID"), rs.getInt("lessonDate"),
-                        Status.fromString(rs.getString("status"))));
-
+            if (isAndroid) {
+                while (rs.next())
+                    out.add(new Booking(rs.getString("utenteID"), getTeacher(rs.getInt("docenteID")),
+                            rs.getString("corsoID"), rs.getInt("lessonDate"),
+                            Status.fromString(rs.getString("status"))));
+            } else {
+                while (rs.next())
+                    out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
+                            rs.getString("corsoID"), rs.getInt("lessonDate"),
+                            Status.fromString(rs.getString("status"))));
+            }
         } catch (
                 SQLException e) {
             e.printStackTrace();

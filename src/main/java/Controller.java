@@ -168,9 +168,12 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String username = (String) session.getAttribute("username");
+                    String isAndroid = request.getParameter("isAndroid");
                     jsonMessage<List<Booking>> bookings;
-
-                    bookings = Dao.getOldUserBookings(username);
+                    if (isAndroid != null)
+                        bookings = Dao.getOldUserBookings(username, true);
+                    else
+                        bookings = Dao.getOldUserBookings(username, false);
 
                     /*for (Booking b : bookings.getData()) {
                         b.username = null;
