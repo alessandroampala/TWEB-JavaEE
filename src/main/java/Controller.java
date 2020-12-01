@@ -230,10 +230,8 @@ public class Controller extends HttpServlet {
                 }
             }
         }
-        //RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");
-        //dispatcher.forward(request, response);
-        /*response.setContentType("text/html;charset=UTF-8");
-        Dao.insertTeacher("gatto", "matto");*/
+        RequestDispatcher dispatcher = request.getRequestDispatcher("index.html");
+        dispatcher.forward(request, response);
     }
 
     public static boolean isLoggedIn(HttpSession session) {

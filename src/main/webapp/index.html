@@ -254,60 +254,74 @@
                      :status="booking.status"></booking>
         </div>
         <div v-if="navigation === destination.ADMIN_CONSOLE">
-            <form id="addDocente">
-                <div class="form-group">
-                    <label for="nomeDocente">Nome Docente</label>
-                    <input type="text" class="form-control" id="nomeDocente" placeholder="Nome Docente"
-                           v-model="adminForm.teacherName">
-                </div>
-                <div class="form-group">
-                    <label for="cognomeDocente">Cognome Docente</label>
-                    <input type="text" class="form-control" id="cognomeDocente" placeholder="Cognome Docente"
-                           v-model="adminForm.teacherSurname">
-                </div>
-                <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminInsertTeacher">
-            </form>
-            <form id="deleteCorso">
-                <select style="max-width: 250px;" class="form-control m-2" v-model="adminForm.courseToDelete">
-                    <option v-for="course in courses" :value="course.name">{{course.name}}</option>
-                </select>
-                <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteCourse">
-            </form>
-            <form id="addCorso">
-                <div class="form-group">
-                    <label for="nomeCorso">Nome Corso</label>
-                    <input type="text" class="form-control" id="nomeCorso" placeholder="Nome Corso"
-                           v-model="adminForm.courseToAdd">
-                </div>
-                <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminAddCourse">
-            </form>
-            <form id="deleteDocente">
-                <select style="max-width: 250px;" class="form-control m-2" v-model="adminForm.teacherToDelete">
-                    <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
-                        {{teacher.surname}}
-                    </option>
-                </select>
-                <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteTeacher">
-            </form>
+            <p class="h3 text-center">Sezione Docenti</p>
+            <div class="d-flex flex-column text-center p-2">
+                <form id="addDocente" class="mb-2">
+                    <div class="form-group">
+                        <label for="nomeDocente">Nome Docente</label>
+                        <input type="text" class="form-control" id="nomeDocente" placeholder="Nome Docente"
+                               v-model="adminForm.teacherName">
+                    </div>
+                    <div class="form-group">
+                        <label for="cognomeDocente">Cognome Docente</label>
+                        <input type="text" class="form-control" id="cognomeDocente" placeholder="Cognome Docente"
+                               v-model="adminForm.teacherSurname">
+                    </div>
+                    <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminInsertTeacher">
+                </form>
+                <form id="deleteDocente" class="mb-2">
+                    <div class="form-group">
+                        <label>Scegli il Docente</label>
+                        <select class="form-control" v-model="adminForm.teacherToDelete">
+                            <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
+                                {{teacher.surname}}
+                            </option>
+                        </select>
+                    </div>
+                    <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteTeacher">
+                </form>
+            </div>
+            <p class="h3 text-center">Sezione Corso</p>
+            <div class="d-flex flex-column text-center p-2">
+                <form id="addCorso" class="mb-2">
+                    <div class="form-group">
+                        <label for="nomeCorso">Nome Corso</label>
+                        <input type="text" class="form-control" id="nomeCorso" placeholder="Nome Corso"
+                               v-model="adminForm.courseToAdd">
+                    </div>
+                    <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminAddCourse">
+                </form>
+                <form id="deleteCorso" class="mb-2">
+                    <div class="form-group">
+                        <label>Scegli il Corso</label>
+                        <select class="form-control" v-model="adminForm.courseToDelete">
+                            <option v-for="course in courses" :value="course.name">{{course.name}}</option>
+                        </select>
+                    </div>
+                    <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteCourse">
+                </form>
+            </div>
+            <p class="h3 text-center">Sezione Lezioni</p>
+            <div class="d-flex flex-column text-center p-2">
             <form id="manageLezione">
                 <div class="form-group">
                     <label for="manageLezione">Corso</label>
-                    <select style="max-width: 250px;" class="form-control m-2" v-model="adminForm.courseLesson">
+                    <select class="form-control" v-model="adminForm.courseLesson">
                         <option v-for="course in courses" :value="course.name">{{course.name}}</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label for="manageLezione">Docente</label>
-                    <select style="max-width: 250px;" class="form-control m-2" v-model="adminForm.teacherLesson">
+                    <select class="form-control" v-model="adminForm.teacherLesson">
                         <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
                             {{teacher.surname}}
                         </option>
                     </select>
                 </div>
-                <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminAddLesson">
+                <input type="button" class="btn btn-primary mb-2" value="Aggiungi" @click="adminAddLesson">
             </form>
             <div id="delete-ripetizioni-container" class="text-center">
-                <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
+                <div v-if="lessonsFlag === true" class="d-flex flex-column">
                     <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name"
                                  v-bind:nome="lesson.teacher.name"
                                  v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"
@@ -315,7 +329,7 @@
                                  @delete-lesson-emit="adminDeleteLesson(lesson.course.name, lesson.teacher.id)"></ripetizione>
                 </div>
                 <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
-                <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
+            </div>
             </div>
         </div>
 
