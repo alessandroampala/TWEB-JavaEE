@@ -1,3 +1,5 @@
+import com.google.gson.Gson;
+
 import java.awt.print.Book;
 import java.sql.*;
 import java.util.ArrayList;
@@ -23,9 +25,10 @@ public class Dao {
         return initialized;
     }
 
-    public static String insertTeacher(String name, String surname) {
+    public static jsonMessage<Object> insertTeacher(String name, String surname) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO docente (nome, cognome) values(?, ?);";
@@ -33,11 +36,10 @@ public class Dao {
             st.setString(1, name);
             st.setString(2, surname);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -50,23 +52,26 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     //ADMIN
-    public static String deleteTeacher(int teacherId) {
+    public static jsonMessage<Object> deleteTeacher(int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM docente WHERE id = ?;";
             st = conn.prepareStatement(sql);
             st.setInt(1, teacherId);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -79,6 +84,9 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     public static jsonMessage<List<Teacher>> getTeachers() {
@@ -143,20 +151,20 @@ public class Dao {
         return out;
     }
 
-    public static String insertCourse(String name) {
+    public static jsonMessage<Object> insertCourse(String name) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO corso (nome) values(?);";
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -169,23 +177,26 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     //ADMIN
-    public static String deleteCourse(String course) {
+    public static jsonMessage<Object> deleteCourse(String course) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM corso WHERE nome = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -198,6 +209,9 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     public static jsonMessage<List<Course>> getCourses() {
@@ -232,9 +246,10 @@ public class Dao {
         return new jsonMessage<List<Course>>("Ok", out);
     }
 
-    public static String insertLesson(String courseName, int teacherId) {
+    public static jsonMessage<Object> insertLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO lezione (corsoID, docenteID) values(?, ?);";
@@ -242,11 +257,10 @@ public class Dao {
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -259,12 +273,16 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     //ADMIN
-    public static String deleteLesson(String courseName, int teacherId) {
+    public static jsonMessage<Object> deleteLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM lezione WHERE corsoId = ? AND docenteId = ?;";
@@ -272,11 +290,10 @@ public class Dao {
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -289,6 +306,9 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     public static jsonMessage<List<Lesson>> getLessons(String course, String teacherId) {
@@ -370,10 +390,11 @@ public class Dao {
         }
     }
 
-    public static String insertBookings(int[] lessonSlots, String username, int teacherId, String course) {
+    public static jsonMessage<Object> insertBookings(int[] lessonSlots, String username, int teacherId, String course) {
         Connection conn = null;
         PreparedStatement st = null;
         String toReturn = "";
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
@@ -389,7 +410,7 @@ public class Dao {
             }
             System.out.println(st.toString());
             conn.commit();
-            toReturn = "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -398,7 +419,7 @@ public class Dao {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            toReturn = "Lezione già prenotata/non sei disponibile in questo orario/il docente non è disponibile in questo orario";
+            message = new jsonMessage<Object>("Lezione già prenotata/non sei disponibile in questo orario/il docente non è disponibile in questo orario", null);
         } finally {
             if (conn != null) {
                 try {
@@ -412,13 +433,17 @@ public class Dao {
                 }
             }
         }
-        return toReturn;
+
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     //same as deleteBooking
-    public static String cancelBooking(String username, int teacherId, String course, int lessonSlot) {
+    public static jsonMessage<Object> cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM prenotazione" +
@@ -429,11 +454,10 @@ public class Dao {
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -446,18 +470,22 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
 
     //mark booking as done
-    public static String markBooking(String username, int teacherId, String course, int lessonSlot) {
+    public static jsonMessage<Object> markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
+        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
-            String sql =" UPDATE prenotazione" +
-                        " SET status = 'done'" +
-                        " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            String sql = " UPDATE prenotazione" +
+                    " SET status = 'done'" +
+                    " WHERE corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
             conn.setAutoCommit(false);
             st = conn.prepareStatement(sql);
             st.setString(1, course);
@@ -466,7 +494,7 @@ public class Dao {
             st.setInt(4, lessonSlot);
             st.executeUpdate();
 
-            sql =" DELETE FROM prenotazione where corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
+            sql = " DELETE FROM prenotazione where corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.setInt(2, teacherId);
@@ -475,7 +503,7 @@ public class Dao {
             st.executeUpdate();
 
             conn.commit();
-            return "OK";
+            message = new jsonMessage<Object>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -484,7 +512,6 @@ public class Dao {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            return "ERROR";
         } finally {
             if (conn != null) {
                 try {
@@ -498,6 +525,9 @@ public class Dao {
                 }
             }
         }
+        if (message == null)
+            return new jsonMessage<Object>("DB error", null);
+        return message;
     }
 
     public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId) {
@@ -644,7 +674,7 @@ public class Dao {
         return new jsonMessage<List<Booking>>("Ok", out);
     }
 
-    public static jsonMessage<List<Booking>> getOldUserBookings(String username, boolean isAndroid) {
+    public static jsonMessage<List<Booking>> getOldUserBookings(String username) {
         Connection conn = null;
         PreparedStatement st = null;
         List<Booking> out = new ArrayList<>();
@@ -655,17 +685,11 @@ public class Dao {
             st.setString(1, username);
             ResultSet rs = st.executeQuery();
 
-            if (isAndroid) {
-                while (rs.next())
-                    out.add(new Booking(rs.getString("utenteID"), getTeacher(rs.getInt("docenteID")),
-                            rs.getString("corsoID"), rs.getInt("lessonDate"),
-                            Status.fromString(rs.getString("status"))));
-            } else {
-                while (rs.next())
-                    out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
-                            rs.getString("corsoID"), rs.getInt("lessonDate"),
-                            Status.fromString(rs.getString("status"))));
-            }
+            while (rs.next())
+                out.add(new Booking(rs.getString("utenteID"), new Teacher(-1, rs.getString("nome"), rs.getString("cognome")),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+
         } catch (
                 SQLException e) {
             e.printStackTrace();
@@ -682,6 +706,7 @@ public class Dao {
                 }
             }
         }
+
         if (out.isEmpty())
             return new jsonMessage<List<Booking>>("Prenotazioni non trovate", out);
         return new jsonMessage<List<Booking>>("Ok", out);

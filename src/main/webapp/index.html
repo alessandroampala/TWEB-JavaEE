@@ -247,8 +247,8 @@
             <booking v-if="oldUserBooking.length > 0"
                      v-for="booking in oldUserBooking"
                      :course="booking.course"
-                     :teacher_name="teachers[booking.teacherId].name"
-                     :teacher_surname="teachers[booking.teacherId].surname"
+                     :teacher_name="booking.teacher.name"
+                     :teacher_surname="booking.teacher.surname"
                      v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
                      v-bind:lesson-slot="booking.lessonSlot"
                      :status="booking.status"></booking>
@@ -725,9 +725,9 @@
                         course: vm.lessonData.course,
                     }, function (data) {
                         //console.log(data);
-                        if (data !== "OK") {
+                        if (data.message !== "OK") {
                             $('#errorToast').toast('show');
-                            document.getElementById("errorToastText").innerText = data;
+                            document.getElementById("errorToastText").innerText = data.message;
                         }
                         vm.selectedLessonSlots = [];
                         vm.prenotazioniDocente();
@@ -825,7 +825,7 @@
                         teacherName: vm.adminForm.teacherName,
                         teacherSurname: vm.adminForm.teacherSurname,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.adminForm.teacherName = "";
                             vm.adminForm.teacherSurname = "";
                             vm.docenti();
@@ -841,7 +841,7 @@
                         action: "adminDeleteTeacher",
                         teacherId: vm.adminForm.teacherToDelete,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.adminForm.teacherToDelete = 0;
                             vm.docenti();
                         }
@@ -856,7 +856,7 @@
                         action: "adminDeleteCourse",
                         course: vm.adminForm.courseToDelete,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
                         }
@@ -871,7 +871,7 @@
                         action: "adminAddCourse",
                         course: vm.adminForm.courseToAdd,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.adminForm.courseToAdd = "";
                             vm.materie();
                         }
@@ -887,7 +887,7 @@
                         course: vm.adminForm.courseLesson,
                         teacherId: vm.adminForm.teacherLesson,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.adminForm.courseLesson = "Seleziona Materia";
                             vm.adminForm.teacherLesson = 0;
                             vm.lezioni(null, null);
@@ -904,7 +904,7 @@
                         course: course,
                         teacherId: id,
                     }, function (data) {
-                        if (data === "OK") {
+                        if (data.message === "OK") {
                             vm.lezioni(null, null);
                         }
                     });

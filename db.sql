@@ -49,7 +49,8 @@ CREATE TABLE prenotazione (
 CREATE TABLE archivioPrenotazione (
     id int(11) NOT NULL AUTO_INCREMENT,
     corsoID varchar(100) NOT NULL,
-    docenteID int(11) NOT NULL,
+    nome varchar(100) NOT NULL,
+    cognome varchar(100),
     utenteID varchar(100) NOT NULL,
     lessonDate int(2) NOT NULL CHECK (lessonDate >= 0 and lessonDate < 25),
     status ENUM ('done', 'canceled') NOT NULL,
@@ -67,9 +68,12 @@ delimiter |
 CREATE TRIGGER archiviaOnUpdate AFTER UPDATE ON prenotazione
 FOR EACH ROW
 BEGIN
+    DECLARE nomeDocente varchar(100);
+    DECLARE cognomeDocente varchar(100);
+    SELECT docente.nome, docente.cognome FROM docente WHERE id=OLD.docenteId INTO nomeDocente, cognomeDocente;
     IF  (NEW.status <> OLD.status) THEN
-        INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
-        VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, NEW.status);
+        INSERT INTO archivioPrenotazione (corsoId, nome, cognome, utenteId, lessonDate, status)
+        VALUES (OLD.corsoId, nomeDocente, cognomeDocente, OLD.utenteID, OLD.lessonDate, NEW.status);
     END IF;
 END;
 |
@@ -81,9 +85,12 @@ delimiter |
 CREATE TRIGGER archiviaOnDelete BEFORE DELETE ON prenotazione
 FOR EACH ROW
 BEGIN
+    DECLARE nomeDocente varchar(100);
+    DECLARE cognomeDocente varchar(100);
+    SELECT docente.nome, docente.cognome FROM docente WHERE id=OLD.docenteId INTO nomeDocente, cognomeDocente;
     IF  (OLD.status = 'active') THEN
-        INSERT INTO archivioPrenotazione (corsoId, docenteId, utenteId, lessonDate, status)
-        VALUES (OLD.corsoId, OLD.docenteId, OLD.utenteID, OLD.lessonDate, 'canceled');
+        INSERT INTO archivioPrenotazione (corsoId, nome, cognome, utenteId, lessonDate, status)
+        VALUES (OLD.corsoId, nomeDocente, cognomeDocente, OLD.utenteID, OLD.lessonDate, 'canceled');
     END IF;
 END;
 |
@@ -102,15 +109,3 @@ INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALU
 INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 14, 'active');
 INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 2, 'active');
 INSERT INTO prenotazione (corsoID, docenteID, utenteID, lessonDate, status) VALUES ('Architettura', 1, 'Alessandro', 0, 'active');
-
-
--- Transaction to call from code
-START TRANSACTION;
-
-UPDATE prenotazione
-SET status = 'done'
-WHERE id = 1;
-
-DELETE FROM prenotazione WHERE id = 1;
-
-COMMIT;
