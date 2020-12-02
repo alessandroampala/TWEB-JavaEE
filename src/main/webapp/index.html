@@ -235,8 +235,8 @@
             <booking v-if="userBookings.length > 0"
                      v-for="booking in userBookings"
                      :course="booking.course"
-                     :teacher_name="teachers[booking.teacherId].name"
-                     :teacher_surname="teachers[booking.teacherId].surname"
+                     :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
+                     :teacher_surname="teachers.find((element) => {return element.id === booking.teacherId}).surname"
                      v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
                      v-bind:lesson-slot="booking.lessonSlot"
                      :teacher_id="booking.teacherId"
@@ -759,7 +759,7 @@
                     vm.oldUserBooking.sort((a, b) => {
                         return b.lessonSlot - a.lessonSlot
                     });
-                    console.log(vm.oldUserBooking)
+                    //console.log(vm.oldUserBooking)
                 });
             },
             navigateTo: function (dest) {
