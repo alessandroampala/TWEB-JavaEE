@@ -32,9 +32,9 @@ public class Controller extends HttpServlet {
         Gson gson = new Gson();
 
         HttpSession session = request.getSession();
-        String u = (String) session.getAttribute("username");
+        /*String u = (String) session.getAttribute("username");
         if (u != null)
-            System.out.println("L'username in sessione è: " + u);
+            System.out.println("L'username in sessione è: " + u);*/
 
         String action = request.getParameter("action");
         if (action != null) {
@@ -133,8 +133,6 @@ public class Controller extends HttpServlet {
                     String teacherId = request.getParameter("teacherId");
                     jsonMessage<List<Booking>> bookings = Dao.getTeacherBookings(Integer.parseInt(teacherId));
 
-                    System.out.println("teacherBookings");
-
                     for (Booking b : bookings.getData()) {
                         b.setUsername(null);
                     }
@@ -176,6 +174,21 @@ public class Controller extends HttpServlet {
                         b.username = null;
                     }*/
                     out.print(gson.toJson(bookings));
+                    out.flush();
+                    out.close();
+                    return;
+                }
+                case "allBookings": {
+                    PrintWriter out = response.getWriter();
+                    response.setContentType("application/json;charset=UTF-8");
+
+                    if(isAdmin(session))
+                    {
+                        jsonMessage<BothBookings> bookings;
+                        bookings = Dao.getAllBookings();
+                        out.print(gson.toJson(bookings));
+                    }
+
                     out.flush();
                     out.close();
                     return;

@@ -230,7 +230,6 @@
             </div>
             <!-- End Modal -->
         </div>
-
         <div v-if="navigation === destination.PRENOTAZIONI" class="d-flex flex-column justify-content-center p-2">
             <booking v-if="userBookings.length > 0"
                      v-for="booking in userBookings"
@@ -337,6 +336,33 @@
                     <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
                 </div>
             </div>
+
+            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+            <div class="card-header font-weight-bold">Prenotazioni</div>
+            <div class="d-flex flex-row justify-content-center flex-wrap p-2">
+
+                <booking v-if="userBookings.length > 0"
+                         v-for="booking in allBookings.newBookings"
+                         :course="booking.course"
+                         :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
+                         :teacher_surname="teachers.find((element) => {return element.id === booking.teacherId}).surname"
+                         v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
+                         v-bind:lesson-slot="booking.lessonSlot"
+                         :teacher_id="booking.teacherId"
+                         :status="booking.status"
+                         :username="booking.username"></booking>
+                <booking v-if="userBookings.length > 0"
+                         v-for="booking in allBookings.oldBookings"
+                         :course="booking.course"
+                         :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
+                         :teacher_surname="teachers.find((element) => {return element.id === booking.teacherId}).surname"
+                         v-bind:date_hour="lessonSlotToString(booking.lessonSlot)"
+                         v-bind:lesson-slot="booking.lessonSlot"
+                         :teacher_id="booking.teacherId"
+                         :status="booking.status"
+                         :username="booking.username"></booking>
+            </div>
+        </div>
         </div>
 
         <!-- Error Toast -->
@@ -371,6 +397,12 @@
         PRENOTA: 'prenota',
         PRENOTAZIONI: 'prenotazioni',
         ADMIN_CONSOLE: 'adminConsole',
+    }
+
+    const bookingStatus = {
+        ACTIVE: 'ACTIVE',
+        CANCELED: 'CANCELED',
+        DONE: 'DONE',
     }
 
     function lessonSlotToString(lessonSlot) {
@@ -408,13 +440,16 @@
     }
 
     Vue.component('booking', {
-        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot', 'status'],
+        props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot', 'status', 'username'],
         template: '<div class="card m-2">\n' +
             '  <div class="card-body">\n' +
             '    <h5 class="card-title">{{course}}</h5>\n' +
             '    <p class="card-text">{{teacher_name}} {{teacher_surname}}</p>\n' +
             '    <p class="card-text">{{date_hour}}</p>\n' +
-            '    <p v-if="status !== null" class="card-text">{{status}}</p>\n' +
+            '    <p v-if="username" class="card-text">{{username}}</p>\n' +
+            '    <p v-if="status !== null && status === bookingStatus.ACTIVE" class="card-text badge badge-primary">{{status}}</p>\n' +
+            '    <p v-if="status !== null && status === bookingStatus.CANCELED" class="card-text badge badge-warning">{{status}}</p>\n' +
+            '    <p v-if="status !== null && status === bookingStatus.DONE" class="card-text badge badge-success">{{status}}</p>\n' +
             '    <a v-if="status === null" href="#" class="btn btn-warning" @click="emitDisdici">Disdici</a>\n' +
             '    <a v-if="status === null" href="#" class="btn btn-primary" @click="emitEffettuata">Effettuata</a>\n' +
             '  </div>\n' +
@@ -443,7 +478,9 @@
             emitNames: function () {
 
                 if (this.type === 'delete')
+                {
                     this.$emit('delete-lesson-emit', this.corso, this.id);
+                }
                 else
                     this.$emit('lesson-emit', this.nome, this.cognome, this.corso, this.id);
             }
@@ -454,7 +491,7 @@
         el: "#body-container",
         data: {
             lessonsFlag: null,
-            lessons: null,
+            lessons: [],
             courses: null,
             teachers: null,
             username: null,
@@ -475,6 +512,7 @@
             teacherBookings: null,
             userBookings: null,
             oldUserBooking: [],
+            allBookings: [],
             selectedLessonSlots: [],
             navigation: destination.PRENOTA,
             adminForm: {
@@ -771,6 +809,25 @@
                     //console.log(vm.oldUserBooking)
                 });
             },
+            getAllBookings: function () {
+                const vm = this
+                if(vm.isAdmin) {
+                    $.get("Controller", {
+                        action: "allBookings",
+                    }, function (data) {
+                        console.log(data);
+                        if (data.message !== "OK") {
+                            vm.showToast(data.message);
+                        }
+                        vm.allBookings = data.data;
+                        vm.allBookings.oldBookings.sort((a, b) => {return a.username.localeCompare(b.username)})
+                        vm.allBookings.newBookings.sort((a, b) => {return a.username.localeCompare(b.username)})
+                        /*vm.allBookings.sort((a, b) => {
+                            return b.lessonSlot - a.lessonSlot
+                        });*/
+                    });
+                }
+            },
             navigateTo: function (dest) {
                 this.navigation = dest;
                 let prenotaNav = document.getElementById("PrenotaNav");
@@ -796,6 +853,7 @@
                         break;
                     case destination.ADMIN_CONSOLE:
                         adminConsoleNav.classList.add("active");
+                        this.getAllBookings();
                         break;
                 }
             },
@@ -858,6 +916,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.teacherToDelete = 0;
                             vm.docenti();
+                            vm.getUserBookings();
                         } else
                             vm.showToast(data.message);
                     });

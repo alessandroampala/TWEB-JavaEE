@@ -709,24 +709,39 @@ public class Dao {
     }
 
     //ADMIN
-    public static jsonMessage<List<Booking>> getAllBookings() {
+    public static jsonMessage<BothBookings> getAllBookings() {
         Connection conn = null;
         Statement st = null;
         List<Booking> out = new ArrayList<>();
+        List<Booking> out2 = new ArrayList<>();
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "SELECT * FROM prenotazione;";
             st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next())
+            {
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-            return new jsonMessage<List<Booking>>("OK", out);
+            }
+
+            sql = "SELECT * FROM archivioPrenotazione";
+            st = conn.createStatement();
+            rs = st.executeQuery(sql);
+
+            while (rs.next())
+            {
+                out2.add(new Booking(rs.getString("utenteID"), new Teacher(-1, rs.getString("nome"), rs.getString("cognome")),
+                        rs.getString("corsoID"), rs.getInt("lessonDate"),
+                        Status.fromString(rs.getString("status"))));
+            }
+
+            return new jsonMessage<BothBookings>("OK", new BothBookings(out2, out));
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
+            return new jsonMessage<BothBookings>("ERROR", null);
         } finally {
             if (conn != null) {
                 try {
@@ -896,6 +911,17 @@ class Booking {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+}
+
+class BothBookings {
+    List<Booking> oldBookings;
+    List<Booking> newBookings;
+
+    public BothBookings(List<Booking> oldBookings, List<Booking> newBookings)
+    {
+        this.oldBookings = oldBookings;
+        this.newBookings = newBookings;
     }
 }
 
