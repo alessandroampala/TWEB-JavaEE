@@ -82,7 +82,7 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
 
                     jsonMessage<User> jsonData = Dao.getUser(username, password);
-                    if (jsonData.getMessage().equals("Ok")) //user exists
+                    if (jsonData.getMessage().equals("OK")) //user exists
                     {
                         jsonData.getData().setPassword(null);
                         session.setAttribute("username", jsonData.getData().getUsername());

@@ -344,7 +344,7 @@
                 </button>
             </div>
             <div class="toast-body" id="errorToastText">
-                Message
+                {{message}}
             </div>
         </div>
         <!-- End Error Toast -->
@@ -504,7 +504,7 @@
                 $.get("Controller", {
                     action: "materie",
                 }, function (data) {
-                    if (data.message === "Ok") {
+                    if (data.message === "OK") {
                         vm.courses = data.data;
                     } else {
                         vm.courses = null;
@@ -516,7 +516,7 @@
                 $.get("Controller", {
                     action: "docenti"
                 }, function (data) {
-                    if (data.message === "Ok") {
+                    if (data.message === "OK") {
                         vm.teachers = data.data;
                     } else {
                         vm.teachers = null;
@@ -530,7 +530,7 @@
                     course: corso,
                     teacherId: docenteId,
                 }, function (data) {
-                    if (data.message === "Ok") {
+                    if (data.message === "OK") {
                         vm.lessons = data.data;
                         vm.lessonsFlag = true;
                     } else {
@@ -550,7 +550,7 @@
                     username: vm.username,
                     password: vm.password
                 }, function (data) {
-                    if (data.message === "Ok") {
+                    if (data.message === "OK") {
                         vm.username = data.data.username;
                         vm.password = null;
                         vm.isAdmin = data.data.admin;
@@ -559,8 +559,7 @@
                         $('#loginModal').modal('hide');
                     } else {
                         vm.loggedIn = false;
-                        vm.message = data.message;
-                        $("#errorToast").toast('show');
+                        vm.showToast(data.message);
                     }
                 });
             },
@@ -693,7 +692,6 @@
 
 
                 });
-                //return vm.bookings;
             },
             onCellClick: function (i, j) {
                 let lessonSlot = (j - 1) * 5 + i;
@@ -726,8 +724,7 @@
                     }, function (data) {
                         //console.log(data);
                         if (data.message !== "OK") {
-                            $('#errorToast').toast('show');
-                            document.getElementById("errorToastText").innerText = data.message;
+                            vm.showToast(data.message);
                         }
                         vm.selectedLessonSlots = [];
                         vm.prenotazioniDocente();
@@ -744,6 +741,9 @@
                 $.get("Controller", {
                     action: "userBooking",
                 }, function (data) {
+                    if (data.message !== "OK") {
+                        vm.showToast(data.message);
+                    }
                     vm.userBookings = data.data;
                     vm.userBookings.sort((a, b) => {
                         return b.lessonSlot - a.lessonSlot
@@ -755,6 +755,9 @@
                 $.get("Controller", {
                     action: "oldUserBookings",
                 }, function (data) {
+                    if (data.message !== "OK") {
+                        vm.showToast(data.message);
+                    }
                     vm.oldUserBooking = data.data;
                     vm.oldUserBooking.sort((a, b) => {
                         return b.lessonSlot - a.lessonSlot
@@ -799,6 +802,8 @@
                     teacherId: teacherId,
                 }, function (data) {
                     //console.log(data);
+                    if(data.message !== "OK")
+                        vm.showToast(data.message);
                     vm.getUserBookings();
                     vm.getOldUserBookings();
                 });
@@ -812,6 +817,8 @@
                     teacherId: teacherId,
                 }, function (data) {
                     console.log(data);
+                    if(data.message !== "OK")
+                        vm.showToast(data.message);
                     vm.getUserBookings();
                     vm.getOldUserBookings();
                 });
@@ -830,6 +837,8 @@
                             vm.adminForm.teacherSurname = "";
                             vm.docenti();
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
             },
@@ -845,6 +854,8 @@
                             vm.adminForm.teacherToDelete = 0;
                             vm.docenti();
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
             },
@@ -860,6 +871,8 @@
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
             },
@@ -875,6 +888,8 @@
                             vm.adminForm.courseToAdd = "";
                             vm.materie();
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
             },
@@ -892,6 +907,8 @@
                             vm.adminForm.teacherLesson = 0;
                             vm.lezioni(null, null);
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
             },
@@ -907,8 +924,14 @@
                         if (data.message === "OK") {
                             vm.lezioni(null, null);
                         }
+                        else
+                            vm.showToast(data.message);
                     });
                 }
+            },
+            showToast: function (message) {
+                this.message = message;
+                $("#errorToast").toast('show');
             },
         }
     });
