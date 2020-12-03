@@ -142,7 +142,7 @@
                                  v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id" type="add"
                                  @lesson-emit="onLessonEmit"></ripetizione>
                 </div>
-                <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
+                <p v-if="lessons.length === 0" class="m-2">Non ci sono lezioni.</p>
                 <img v-if="lessonsFlag === null" class="m-2" style="width: 70px" src="res/load.gif" alt="loading">
             </div>
 
@@ -253,25 +253,27 @@
                      v-bind:lesson-slot="booking.lessonSlot"
                      :status="booking.status"></booking>
         </div>
-        <div v-if="navigation === destination.ADMIN_CONSOLE">
-            <p class="h3 text-center">Sezione Docenti</p>
-            <div class="d-flex flex-column text-center p-2">
+        <div v-if="navigation === destination.ADMIN_CONSOLE" class="d-flex flex-row justify-content-center flex-wrap p-2">
+            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+                <div class="card-header font-weight-bold">Docenti</div>
                 <form id="addDocente" class="mb-2">
+                    <div class="font-weight-bold text-rigth m-2">Aggiungi Docente</div>
+                    <div class="d-flex flex-row justify-content-center flex-wrap p-2">
                     <div class="form-group">
-                        <label for="nomeDocente">Nome Docente</label>
                         <input type="text" class="form-control" id="nomeDocente" placeholder="Nome Docente"
                                v-model="adminForm.teacherName">
                     </div>
                     <div class="form-group">
-                        <label for="cognomeDocente">Cognome Docente</label>
                         <input type="text" class="form-control" id="cognomeDocente" placeholder="Cognome Docente"
                                v-model="adminForm.teacherSurname">
+                    </div>
                     </div>
                     <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminInsertTeacher">
                 </form>
                 <form id="deleteDocente" class="mb-2">
                     <div class="form-group">
-                        <label>Scegli il Docente</label>
+                        <hr>
+                        <div class="font-weight-bold text-rigth m-2 mt-3">Rimuovi Docente</div>
                         <select class="form-control" v-model="adminForm.teacherToDelete">
                             <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
                                 {{teacher.surname}}
@@ -281,19 +283,20 @@
                     <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteTeacher">
                 </form>
             </div>
-            <p class="h3 text-center">Sezione Corso</p>
-            <div class="d-flex flex-column text-center p-2">
+            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+                <div class="card-header font-weight-bold">Corsi</div>
                 <form id="addCorso" class="mb-2">
                     <div class="form-group">
-                        <label for="nomeCorso">Nome Corso</label>
+                        <div class="font-weight-bold text-rigth m-2">Aggiungi Corso</div>
                         <input type="text" class="form-control" id="nomeCorso" placeholder="Nome Corso"
                                v-model="adminForm.courseToAdd">
                     </div>
                     <input type="button" class="btn btn-primary" value="Aggiungi" @click="adminAddCourse">
                 </form>
+                <hr>
                 <form id="deleteCorso" class="mb-2">
                     <div class="form-group">
-                        <label>Scegli il Corso</label>
+                        <div class="font-weight-bold text-rigth m-2">Elimina Corso</div>
                         <select class="form-control" v-model="adminForm.courseToDelete">
                             <option v-for="course in courses" :value="course.name">{{course.name}}</option>
                         </select>
@@ -301,35 +304,38 @@
                     <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteCourse">
                 </form>
             </div>
-            <p class="h3 text-center">Sezione Lezioni</p>
-            <div class="d-flex flex-column text-center p-2">
-            <form id="manageLezione">
-                <div class="form-group">
-                    <label for="manageLezione">Corso</label>
-                    <select class="form-control" v-model="adminForm.courseLesson">
-                        <option v-for="course in courses" :value="course.name">{{course.name}}</option>
-                    </select>
+            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+                <div class="card-header font-weight-bold">Lezioni</div>
+                <form id="manageLezione">
+                    <div class="form-group">
+                        <div class="font-weight-bold text-rigth m-2">Aggiungi Lezione</div>
+                        <label for="manageLezione">Corso</label>
+                        <select class="form-control" v-model="adminForm.courseLesson">
+                            <option v-for="course in courses" :value="course.name">{{course.name}}</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="manageLezione">Docente</label>
+                        <select class="form-control" v-model="adminForm.teacherLesson">
+                            <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
+                                {{teacher.surname}}
+                            </option>
+                        </select>
+                    </div>
+                    <input type="button" class="btn btn-primary mb-2" value="Aggiungi" @click="adminAddLesson">
+                </form>
+                <div id="delete-ripetizioni-container" class="text-center" v-if="lessons.length > 0">
+                    <hr>
+                    <div class="font-weight-bold text-rigth m-2">Elimina Lezione</div>
+                    <div v-if="lessonsFlag === true" class="d-flex flex-row justify-content-center flex-wrap p-2">
+                        <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name"
+                                     v-bind:nome="lesson.teacher.name"
+                                     v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"
+                                     type="delete"
+                                     @delete-lesson-emit="adminDeleteLesson(lesson.course.name, lesson.teacher.id)"></ripetizione>
+                    </div>
+                    <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
                 </div>
-                <div class="form-group">
-                    <label for="manageLezione">Docente</label>
-                    <select class="form-control" v-model="adminForm.teacherLesson">
-                        <option v-for="teacher in teachers" :value="teacher.id">{{teacher.name}}
-                            {{teacher.surname}}
-                        </option>
-                    </select>
-                </div>
-                <input type="button" class="btn btn-primary mb-2" value="Aggiungi" @click="adminAddLesson">
-            </form>
-            <div id="delete-ripetizioni-container" class="text-center">
-                <div v-if="lessonsFlag === true" class="d-flex flex-column">
-                    <ripetizione v-for="lesson in lessons" v-bind:corso="lesson.course.name"
-                                 v-bind:nome="lesson.teacher.name"
-                                 v-bind:cognome="lesson.teacher.surname" v-bind:id="lesson.teacher.id"
-                                 type="delete"
-                                 @delete-lesson-emit="adminDeleteLesson(lesson.course.name, lesson.teacher.id)"></ripetizione>
-                </div>
-                <p v-if="lessonsFlag === false" class="m-2">Non ci sono lezioni.</p>
-            </div>
             </div>
         </div>
 
@@ -802,7 +808,7 @@
                     teacherId: teacherId,
                 }, function (data) {
                     //console.log(data);
-                    if(data.message !== "OK")
+                    if (data.message !== "OK")
                         vm.showToast(data.message);
                     vm.getUserBookings();
                     vm.getOldUserBookings();
@@ -817,7 +823,7 @@
                     teacherId: teacherId,
                 }, function (data) {
                     console.log(data);
-                    if(data.message !== "OK")
+                    if (data.message !== "OK")
                         vm.showToast(data.message);
                     vm.getUserBookings();
                     vm.getOldUserBookings();
@@ -836,8 +842,7 @@
                             vm.adminForm.teacherName = "";
                             vm.adminForm.teacherSurname = "";
                             vm.docenti();
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }
@@ -853,8 +858,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.teacherToDelete = 0;
                             vm.docenti();
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }
@@ -870,8 +874,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }
@@ -887,8 +890,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseToAdd = "";
                             vm.materie();
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }
@@ -906,8 +908,7 @@
                             vm.adminForm.courseLesson = "Seleziona Materia";
                             vm.adminForm.teacherLesson = 0;
                             vm.lezioni(null, null);
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }
@@ -923,8 +924,7 @@
                     }, function (data) {
                         if (data.message === "OK") {
                             vm.lezioni(null, null);
-                        }
-                        else
+                        } else
                             vm.showToast(data.message);
                     });
                 }

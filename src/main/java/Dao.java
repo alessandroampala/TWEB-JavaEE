@@ -272,7 +272,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<Object>("Errore, il docente insegna già la materia?", null);
         return message;
     }
 
