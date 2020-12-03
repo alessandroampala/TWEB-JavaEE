@@ -471,7 +471,7 @@
             '    <h5 class="card-title">{{corso}}</h5>\n' +
             '    <h6 :id="\'Docente-\' + id" class="card-subtitle mb-2 text-muted">{{nome}} {{cognome}}</h6>\n' +
             '    <button v-if="type !== \'delete\'" class="btn btn-primary" v-on:click="emitNames" data-toggle="modal" data-target="#bookModal">Show</button>\n' +
-            '    <button v-if="type === \'delete\'" class="btn btn-danger" v-on:click="emitNames">Delete</button>\n' +
+            '    <button v-if="type === \'delete\'" class="btn btn-danger" v-on:click="emitNames">Rimuovi</button>\n' +
             '</div>\n' +
             '</div>',
         methods: {
@@ -917,6 +917,7 @@
                             vm.adminForm.teacherToDelete = 0;
                             vm.docenti();
                             vm.getUserBookings();
+                            vm.getAllBookings();
                         } else
                             vm.showToast(data.message);
                     });
@@ -933,6 +934,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
+                            vm.getAllBookings();
                         } else
                             vm.showToast(data.message);
                     });
@@ -983,6 +985,7 @@
                     }, function (data) {
                         if (data.message === "OK") {
                             vm.lezioni(null, null);
+                            vm.getAllBookings();
                         } else
                             vm.showToast(data.message);
                     });
