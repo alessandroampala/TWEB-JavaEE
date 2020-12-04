@@ -14,8 +14,8 @@ import java.util.List;
 
 @WebServlet(name = "Controller", urlPatterns = {"/Controller"})
 public class Controller extends HttpServlet {
-    public void init(ServletConfig conf) throws ServletException {
-        if (!Dao.isInitialized())
+    public void init(ServletConfig conf) {
+        if (Dao.isNotInitialized())
             Dao.initialize();
     }
 
@@ -84,7 +84,6 @@ public class Controller extends HttpServlet {
                     jsonMessage<User> jsonData = Dao.getUser(username, password);
                     if (jsonData.getMessage().equals("OK")) //user exists
                     {
-                        jsonData.getData().setPassword(null);
                         session.setAttribute("username", jsonData.getData().getUsername());
                         session.setAttribute("isAdmin", jsonData.getData().getAdmin());
                     }
@@ -98,7 +97,7 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     jsonMessage<User> jsonData;
                     if (!session.isNew() && session.getAttribute("username") != null) {
-                        jsonData = new jsonMessage<>("Sessione valida", new User((String) session.getAttribute("username"), null, (boolean) session.getAttribute("isAdmin")));
+                        jsonData = new jsonMessage<>("Sessione valida", new User((String) session.getAttribute("username"), (boolean) session.getAttribute("isAdmin")));
                         out.print(gson.toJson(jsonData));
                     } else {
                         session.invalidate();

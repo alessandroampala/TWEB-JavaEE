@@ -9,12 +9,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 
 @WebServlet(name = "AdminController", urlPatterns = {"/AdminController"})
 public class AdminController extends HttpServlet {
     public void init(ServletConfig conf) throws ServletException {
-        if (!Dao.isInitialized())
+        if (Dao.isNotInitialized())
             Dao.initialize();
     }
 

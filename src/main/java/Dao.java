@@ -1,6 +1,3 @@
-import com.google.gson.Gson;
-
-import java.awt.print.Book;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +18,8 @@ public class Dao {
         }
     }
 
-    public static boolean isInitialized() {
-        return initialized;
+    public static boolean isNotInitialized() {
+        return !initialized;
     }
 
     public static jsonMessage<Object> insertTeacher(String name, String surname) {
@@ -36,7 +33,7 @@ public class Dao {
             st.setString(1, name);
             st.setString(2, surname);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -53,7 +50,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -68,7 +65,7 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setInt(1, teacherId);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -85,7 +82,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -101,11 +98,11 @@ public class Dao {
             while (rs.next()) {
                 out.add(new Teacher(rs.getInt("id"), rs.getString("nome"), rs.getString("Cognome")));
             }
-            return new jsonMessage<List<Teacher>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Teacher>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -160,7 +157,7 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, name);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -177,7 +174,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -192,7 +189,7 @@ public class Dao {
             st = conn.prepareStatement(sql);
             st.setString(1, course);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -209,7 +206,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -225,11 +222,11 @@ public class Dao {
             while (rs.next()) {
                 out.add(new Course(rs.getString("nome")));
             }
-            return new jsonMessage<List<Course>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Course>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -255,7 +252,7 @@ public class Dao {
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -272,7 +269,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("Errore, il docente insegna già la materia?", null);
+            return new jsonMessage<>("Errore, il docente insegna già la materia?", null);
         return message;
     }
 
@@ -280,7 +277,7 @@ public class Dao {
     public static jsonMessage<Object> deleteLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
-        jsonMessage<Object> message = null;
+        jsonMessage<Object> message;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM lezione WHERE corsoId = ? AND docenteId = ?;";
@@ -288,11 +285,11 @@ public class Dao {
             st.setString(1, courseName);
             st.setInt(2, teacherId);
             st.executeUpdate();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<Object>("ERROR", null);
+            return new jsonMessage<>("ERROR", null);
         } finally {
             if (conn != null) {
                 try {
@@ -306,7 +303,7 @@ public class Dao {
             }
         }
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -318,16 +315,16 @@ public class Dao {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "SELECT * FROM lezione";
 
-            if (course != "" && teacherId != "") {
+            if (!course.equals("") && !teacherId.equals("")) {
                 sql += " WHERE corsoId = ? AND docenteId = ?;";
                 st = conn.prepareStatement(sql);
                 st.setString(1, course);
                 st.setInt(2, Integer.parseInt(teacherId));
-            } else if (course != "") {
+            } else if (!course.equals("")) {
                 sql += " WHERE corsoId = ?;";
                 st = conn.prepareStatement(sql);
                 st.setString(1, course);
-            } else if (teacherId != "") {
+            } else if (!teacherId.equals("")) {
                 sql += " WHERE docenteId = ?;";
                 st = conn.prepareStatement(sql);
                 st.setInt(1, Integer.parseInt(teacherId));
@@ -340,40 +337,11 @@ public class Dao {
             while (rs.next()) {
                 out.add(new Lesson(getTeacher(rs.getInt("docenteID")), new Course(rs.getString("corsoID"))));
             }
-            return new jsonMessage<List<Lesson>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Lesson>>("ERROR", out);
-        } finally {
-            if (conn != null) {
-                try {
-                    if (st != null)
-                        st.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-    }
-
-    public static void insertBooking(String username, int teacherId, String course, int lessonSlot) {
-        Connection conn = null;
-        PreparedStatement st = null;
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-            String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
-            st = conn.prepareStatement(sql);
-            st.setString(1, course);
-            st.setInt(2, teacherId);
-            st.setString(3, username);
-            st.setInt(4, lessonSlot);
-            st.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -391,33 +359,33 @@ public class Dao {
     public static jsonMessage<Object> insertBookings(int[] lessonSlots, String username, int teacherId, String course) {
         Connection conn = null;
         PreparedStatement st = null;
-        String toReturn = "";
-        jsonMessage<Object> message = null;
+        jsonMessage<Object> message;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "INSERT INTO prenotazione (corsoID, docenteID, utenteId, lessonDate) values(?, ?, ?, ?);";
             conn.setAutoCommit(false);
 
-            for (int i = 0; i < lessonSlots.length; i++) {
+            for (int lessonSlot : lessonSlots) {
                 st = conn.prepareStatement(sql);
                 st.setString(1, course);
                 st.setInt(2, teacherId);
                 st.setString(3, username);
-                st.setInt(4, lessonSlots[i]);
+                st.setInt(4, lessonSlot);
                 st.executeUpdate();
             }
-            System.out.println(st.toString());
             conn.commit();
-            message = new jsonMessage<Object>("OK", null);
+            message = new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
             try {
-                conn.rollback();
+                if (conn != null) {
+                    conn.rollback();
+                }
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            message = new jsonMessage<Object>("Lezione già prenotata/non sei disponibile in questo orario/il docente non è disponibile in questo orario", null);
+            message = new jsonMessage<>("Lezione già prenotata/non sei disponibile in questo orario/il docente non è disponibile in questo orario", null);
         } finally {
             if (conn != null) {
                 try {
@@ -433,7 +401,7 @@ public class Dao {
         }
 
         if (message == null)
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         return message;
     }
 
@@ -441,7 +409,6 @@ public class Dao {
     public static jsonMessage<Object> cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
-        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = "DELETE FROM prenotazione" +
@@ -454,13 +421,13 @@ public class Dao {
             st.executeUpdate();
             System.out.println("cancelBooking rows: " + st.getUpdateCount());
 
-            if(st.getUpdateCount() == 0)
-                return new jsonMessage<Object>("Ripetizione non trovata, l'hai già effettuata/disdetta?", null);
-            return new jsonMessage<Object>("OK", null);
+            if (st.getUpdateCount() == 0)
+                return new jsonMessage<>("Ripetizione non trovata, l'hai già effettuata/disdetta?", null);
+            return new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         } finally {
             if (conn != null) {
                 try {
@@ -480,7 +447,6 @@ public class Dao {
     public static jsonMessage<Object> markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
-        jsonMessage<Object> message = null;
         try {
             conn = DriverManager.getConnection(url, user, password);
             String sql = " UPDATE prenotazione" +
@@ -494,8 +460,8 @@ public class Dao {
             st.setInt(4, lessonSlot);
             st.executeUpdate();
 
-            if(st.getUpdateCount() == 0)
-                return new jsonMessage<Object>("Ripetizione non trovata, l'hai già effettuata/disdetta?", null);
+            if (st.getUpdateCount() == 0)
+                return new jsonMessage<>("Ripetizione non trovata, l'hai già effettuata/disdetta?", null);
 
 
             sql = " DELETE FROM prenotazione where corsoID = ? AND docenteID = ? AND utenteID = ? AND lessonDate = ?;";
@@ -508,7 +474,7 @@ public class Dao {
             System.out.println("deleted row: " + st.getUpdateCount());
 
             conn.commit();
-            return new jsonMessage<Object>("OK", null);
+            return new jsonMessage<>("OK", null);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -517,7 +483,7 @@ public class Dao {
             } catch (SQLException throwables) {
                 throwables.printStackTrace();
             }
-            return new jsonMessage<Object>("DB error", null);
+            return new jsonMessage<>("DB error", null);
         } finally {
             if (conn != null) {
                 try {
@@ -547,11 +513,11 @@ public class Dao {
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-            return new jsonMessage<List<Booking>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -581,44 +547,11 @@ public class Dao {
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-            return new jsonMessage<List<Booking>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
-        } finally {
-            if (conn != null) {
-                try {
-                    if (st != null)
-                        st.close();
-                    conn.close();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println(e.getMessage());
-                }
-            }
-        }
-    }
-
-    public static jsonMessage<List<Booking>> getAllTeacherBookings(String course, int teacherId) {
-        Connection conn = null;
-        PreparedStatement st = null;
-        List<Booking> out = new ArrayList<>();
-        try {
-            conn = DriverManager.getConnection(url, user, password);
-            String sql = "SELECT * FROM prenotazione WHERE docenteID = ?;";
-            st = conn.prepareStatement(sql);
-            st.setInt(1, teacherId);
-            ResultSet rs = st.executeQuery();
-            while (rs.next())
-                out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
-                        rs.getString("corsoID"), rs.getInt("lessonDate"),
-                        Status.fromString(rs.getString("status"))));
-            return new jsonMessage<List<Booking>>("OK", out);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -654,11 +587,11 @@ public class Dao {
                             rs.getString("corsoID"), rs.getInt("lessonDate"),
                             Status.fromString(rs.getString("status"))));
             }
-            return new jsonMessage<List<Booking>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -688,12 +621,12 @@ public class Dao {
                 out.add(new Booking(rs.getString("utenteID"), new Teacher(-1, rs.getString("nome"), rs.getString("cognome")),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
-            return new jsonMessage<List<Booking>>("OK", out);
+            return new jsonMessage<>("OK", out);
         } catch (
                 SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<List<Booking>>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -719,8 +652,7 @@ public class Dao {
             String sql = "SELECT * FROM prenotazione;";
             st = conn.createStatement();
             ResultSet rs = st.executeQuery(sql);
-            while (rs.next())
-            {
+            while (rs.next()) {
                 out.add(new Booking(rs.getString("utenteID"), rs.getInt("docenteID"),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
@@ -730,18 +662,17 @@ public class Dao {
             st = conn.createStatement();
             rs = st.executeQuery(sql);
 
-            while (rs.next())
-            {
+            while (rs.next()) {
                 out2.add(new Booking(rs.getString("utenteID"), new Teacher(-1, rs.getString("nome"), rs.getString("cognome")),
                         rs.getString("corsoID"), rs.getInt("lessonDate"),
                         Status.fromString(rs.getString("status"))));
             }
 
-            return new jsonMessage<BothBookings>("OK", new BothBookings(out2, out));
+            return new jsonMessage<>("OK", new BothBookings(out2, out));
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<BothBookings>("ERROR", null);
+            return new jsonMessage<>("ERROR", null);
         } finally {
             if (conn != null) {
                 try {
@@ -768,14 +699,14 @@ public class Dao {
             st.setString(2, userPass);
             ResultSet rs = st.executeQuery();
             while (rs.next())
-                out = new User(username, userPass, rs.getBoolean("admin"));
+                out = new User(username, rs.getBoolean("admin"));
             if (out == null)
-                return new jsonMessage<User>("Username e/o Password sbagliati", out);
-            return new jsonMessage<User>("OK", out);
+                return new jsonMessage<>("Username e/o Password sbagliati", out);
+            return new jsonMessage<>("OK", out);
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
-            return new jsonMessage<User>("ERROR", out);
+            return new jsonMessage<>("ERROR", out);
         } finally {
             if (conn != null) {
                 try {
@@ -792,13 +723,11 @@ public class Dao {
 }
 
 class User {
-    private String username;
-    private String password;
-    private boolean admin;
+    private final String username;
+    private final boolean admin;
 
-    public User(String username, String password, boolean admin) {
+    public User(String username, boolean admin) {
         this.username = username;
-        this.password = password;
         this.admin = admin;
     }
 
@@ -809,28 +738,21 @@ class User {
     public boolean getAdmin() {
         return this.admin;
     }
-
-    public void setPassword(String password) {
-        this.password = User.this.password;
-    }
 }
 
 class Course {
-    private String name;
+    private final String name;
 
     public Course(String name) {
         this.name = name;
     }
 
-    public String getName() {
-        return this.name;
-    }
 }
 
 class Teacher {
-    private int id;
-    private String name;
-    private String surname;
+    private final int id;
+    private final String name;
+    private final String surname;
 
     public Teacher(int id, String name, String surname) {
         this.id = id;
@@ -838,43 +760,25 @@ class Teacher {
         this.surname = surname;
     }
 
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
 }
 
 class Lesson {
-    private Teacher teacher;
-    private Course course;
+    private final Teacher teacher;
+    private final Course course;
 
     public Lesson(Teacher teacher, Course course) {
         this.teacher = teacher;
         this.course = course;
     }
 
-    public Teacher getTeacher() {
-        return this.teacher;
-    }
-
-    public Course getCourse() {
-        return this.course;
-    }
 }
 
 class Booking {
     private String username;
     private int teacherId;
     private Teacher teacher = null;
-    private String course;
-    private int lessonSlot;
+    private final String course;
+    private final int lessonSlot;
     Status status;
 
     public Booking(String username, int teacherId, String course, int lessonSlot, Status status) {
@@ -893,18 +797,6 @@ class Booking {
         this.status = status;
     }
 
-    public String getCourse() {
-        return course;
-    }
-
-    public Teacher getTeacher() {
-        return teacher;
-    }
-
-    public int getLessonSlot() {
-        return lessonSlot;
-    }
-
     public String getUsername() {
         return username;
     }
@@ -918,16 +810,15 @@ class BothBookings {
     List<Booking> oldBookings;
     List<Booking> newBookings;
 
-    public BothBookings(List<Booking> oldBookings, List<Booking> newBookings)
-    {
+    public BothBookings(List<Booking> oldBookings, List<Booking> newBookings) {
         this.oldBookings = oldBookings;
         this.newBookings = newBookings;
     }
 }
 
 class jsonMessage<T> {
-    private String message;
-    private T data;
+    private final String message;
+    private final T data;
 
     public jsonMessage(String message, T data) {
         this.message = message;
