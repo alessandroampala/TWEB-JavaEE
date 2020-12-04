@@ -585,7 +585,7 @@
             login: function () {
                 const vm = this;
                 if (vm.username == null || vm.username === "" || vm.password == null || vm.password === "") {
-                    vm.message = "Username e/o Password sbagliati";
+                    vm.showToast("Username e/o Password sbagliati");
                     return;
                 }
                 $.post("Controller", {
