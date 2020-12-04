@@ -151,11 +151,6 @@ public class Controller extends HttpServlet {
                     else
                         bookings = Dao.getUserBookings(username, false);
 
-                    System.out.println("teacherBookings");
-
-                    /*for (Booking b : bookings.getData()) {
-                        b.username = null;
-                    }*/
                     out.print(gson.toJson(bookings));
                     out.flush();
                     out.close();

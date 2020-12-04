@@ -340,8 +340,8 @@
             <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
             <div class="card-header font-weight-bold">Prenotazioni</div>
             <div class="d-flex flex-row justify-content-center flex-wrap p-2">
-
-                <booking v-if="userBookings.length > 0"
+                <div class="text-center" v-if="allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">Nessuna prenotazione attiva.</div>
+                <booking v-if="allBookings.newBookings.length > 0"
                          v-for="booking in allBookings.newBookings"
                          :course="booking.course"
                          :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
@@ -351,7 +351,7 @@
                          :teacher_id="booking.teacherId"
                          :status="booking.status"
                          :username="booking.username"></booking>
-                <booking v-if="userBookings.length > 0"
+                <booking v-if="allBookings.oldBookings.length > 0"
                          v-for="booking in allBookings.oldBookings"
                          :course="booking.course"
                          :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
@@ -512,7 +512,10 @@
             teacherBookings: null,
             userBookings: null,
             oldUserBooking: [],
-            allBookings: [],
+            allBookings: {
+                oldBookings: [],
+                newBookings: [],
+            },
             selectedLessonSlots: [],
             navigation: destination.PRENOTA,
             adminForm: {
@@ -815,7 +818,7 @@
                     $.get("Controller", {
                         action: "allBookings",
                     }, function (data) {
-                        console.log(data);
+                        //console.log(data);
                         if (data.message !== "OK") {
                             vm.showToast(data.message);
                         }
@@ -836,6 +839,7 @@
 
                 prenotaNav.classList.remove("active");
                 prenotazioniNav.classList.remove("active");
+                if(adminConsoleNav)
                 adminConsoleNav.classList.remove("active");
 
                 switch (this.navigation) {
@@ -852,7 +856,8 @@
                         this.getOldUserBookings();
                         break;
                     case destination.ADMIN_CONSOLE:
-                        adminConsoleNav.classList.add("active");
+                        if(adminConsoleNav)
+                            adminConsoleNav.classList.add("active");
                         this.getAllBookings();
                         break;
                 }

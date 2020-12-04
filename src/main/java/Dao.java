@@ -419,7 +419,6 @@ public class Dao {
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
-            System.out.println("cancelBooking rows: " + st.getUpdateCount());
 
             if (st.getUpdateCount() == 0)
                 return new jsonMessage<>("Ripetizione non trovata, l'hai già effettuata/disdetta?", null);
@@ -471,7 +470,6 @@ public class Dao {
             st.setString(3, username);
             st.setInt(4, lessonSlot);
             st.executeUpdate();
-            System.out.println("deleted row: " + st.getUpdateCount());
 
             conn.commit();
             return new jsonMessage<>("OK", null);
