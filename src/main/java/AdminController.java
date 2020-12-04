@@ -1,7 +1,5 @@
 import com.google.gson.Gson;
-
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -12,25 +10,24 @@ import java.io.PrintWriter;
 
 @WebServlet(name = "AdminController", urlPatterns = {"/AdminController"})
 public class AdminController extends HttpServlet {
-    public void init(ServletConfig conf) throws ServletException {
+    public void init(ServletConfig conf) {
         if (Dao.isNotInitialized())
             Dao.initialize();
     }
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);
     }
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws IOException {
         Gson gson = new Gson();
 
         HttpSession session = request.getSession();
-        String u = (String) session.getAttribute("username");
 
         String action = request.getParameter("action");
         if (Controller.isLoggedIn(session) && Controller.isAdmin(session) && action != null) {
@@ -98,7 +95,6 @@ public class AdminController extends HttpServlet {
                     out.print(gson.toJson(Dao.deleteLesson(course, Integer.parseInt(teacherId))));
                     out.flush();
                     out.close();
-                    return;
                 }
             }
         }

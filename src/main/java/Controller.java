@@ -98,12 +98,11 @@ public class Controller extends HttpServlet {
                     jsonMessage<User> jsonData;
                     if (!session.isNew() && session.getAttribute("username") != null) {
                         jsonData = new jsonMessage<>("Sessione valida", new User((String) session.getAttribute("username"), (boolean) session.getAttribute("isAdmin")));
-                        out.print(gson.toJson(jsonData));
                     } else {
                         session.invalidate();
                         jsonData = new jsonMessage<>("Sessione invalida", null);
-                        out.print(gson.toJson(jsonData));
                     }
+                    out.print(gson.toJson(jsonData));
                     out.close();
                     return;
                 }
@@ -192,12 +191,12 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {
                         String username = (String) session.getAttribute("username");
-                        String teacherID = (String) request.getParameter("teacherId");
-                        String course = (String) request.getParameter("course");
-                        int[] lessonSlots = gson.fromJson((String) request.getParameter("lessonSlots"), int[].class);
+                        String teacherID = request.getParameter("teacherId");
+                        String course = request.getParameter("course");
+                        int[] lessonSlots = gson.fromJson(request.getParameter("lessonSlots"), int[].class);
                         out.print(gson.toJson(Dao.insertBookings(lessonSlots, username, Integer.parseInt(teacherID), course)));
                     } else {
-                        out.print(gson.toJson(new jsonMessage<Object>("Not logged in", null)));
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
                     }
                     out.close();
                     return;
@@ -207,12 +206,12 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {
                         String username = (String) session.getAttribute("username");
-                        String teacherID = (String) request.getParameter("teacherId");
-                        String course = (String) request.getParameter("course");
-                        String lessonSlot = (String) request.getParameter("lessonSlot");
+                        String teacherID = request.getParameter("teacherId");
+                        String course = request.getParameter("course");
+                        String lessonSlot = request.getParameter("lessonSlot");
                         out.print(gson.toJson(Dao.cancelBooking(username, Integer.parseInt(teacherID), course, Integer.parseInt(lessonSlot))));
                     } else {
-                        out.print(gson.toJson(new jsonMessage<Object>("Not logged in", null)));
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
                     }
                     out.close();
                     return;
@@ -222,12 +221,12 @@ public class Controller extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {
                         String username = (String) session.getAttribute("username");
-                        String teacherID = (String) request.getParameter("teacherId");
-                        String course = (String) request.getParameter("course");
-                        String lessonSlot = (String) request.getParameter("lessonSlot");
+                        String teacherID = request.getParameter("teacherId");
+                        String course = request.getParameter("course");
+                        String lessonSlot = request.getParameter("lessonSlot");
                         out.print(gson.toJson(Dao.markBooking(username, Integer.parseInt(teacherID), course, Integer.parseInt(lessonSlot))));
                     } else {
-                        out.print(gson.toJson(new jsonMessage<Object>("Not logged in", null)));
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
                     }
                     out.close();
                     return;
