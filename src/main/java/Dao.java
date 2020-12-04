@@ -8,6 +8,7 @@ public class Dao {
     private static final String password = "";
     private static boolean initialized = false;
 
+    //Registers driver for mysql, this method is deprecated
     public static void initialize() {
         try {
             DriverManager.registerDriver(new com.mysql.jdbc.Driver());
@@ -18,10 +19,16 @@ public class Dao {
         }
     }
 
+    //Checks if Dao has been initialized
     public static boolean isNotInitialized() {
         return !initialized;
     }
 
+    /*
+     * Inserts teacher inside the the DB
+     * name -> Name of the teacher
+     * surname -> Surname of the teacher
+     */
     public static jsonMessage<Object> insertTeacher(String name, String surname) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -54,7 +61,10 @@ public class Dao {
         return message;
     }
 
-    //ADMIN
+    /*
+     * Deletes teacher from the the DB
+     * teacherId -> Id that represent the teacher
+     */
     public static jsonMessage<Object> deleteTeacher(int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -86,6 +96,7 @@ public class Dao {
         return message;
     }
 
+    //Gets all teachers from the DB
     public static jsonMessage<List<Teacher>> getTeachers() {
         Connection conn = null;
         Statement st = null;
@@ -117,6 +128,10 @@ public class Dao {
         }
     }
 
+    /*
+     * Gets a teacher from the DB
+     * docenteID -> Id used to get teacher from the DB
+     */
     private static Teacher getTeacher(int docenteID) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -147,6 +162,10 @@ public class Dao {
         return out;
     }
 
+    /*
+     * Inserts course in the DB
+     * name -> Name of the course to add
+     */
     public static jsonMessage<Object> insertCourse(String name) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -178,7 +197,10 @@ public class Dao {
         return message;
     }
 
-    //ADMIN
+    /*
+     * Deletes course from the DB
+     * course -> Name of the course to delete
+     */
     public static jsonMessage<Object> deleteCourse(String course) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -210,6 +232,7 @@ public class Dao {
         return message;
     }
 
+    //Gets all courses from the DB
     public static jsonMessage<List<Course>> getCourses() {
         Connection conn = null;
         Statement st = null;
@@ -241,6 +264,11 @@ public class Dao {
         }
     }
 
+    /*
+     * Inserts lesson in the DB (Association between course and teacher)
+     * courseName -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<Object> insertLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -273,7 +301,11 @@ public class Dao {
         return message;
     }
 
-    //ADMIN
+    /*
+     * Deletes lesson from db (Association between course and teacher)
+     * courseName -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<Object> deleteLesson(String courseName, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -307,6 +339,11 @@ public class Dao {
         return message;
     }
 
+    /*
+     * Gets all lessons based on params value (Association between course and teacher)
+     * course -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<List<Lesson>> getLessons(String course, String teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -356,6 +393,13 @@ public class Dao {
         }
     }
 
+    /*
+     * Inserts all bookings chosen by the user
+     * lessonSlots -> All slots chosen by the user
+     * username -> Username of the user
+     * course -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<Object> insertBookings(int[] lessonSlots, String username, int teacherId, String course) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -405,7 +449,13 @@ public class Dao {
         return message;
     }
 
-    //same as deleteBooking
+    /*
+     * Deletes booking chosen by the user
+     * lessonSlot -> Slot chosen by the user
+     * username -> Username of the user
+     * course -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<Object> cancelBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -442,7 +492,13 @@ public class Dao {
     }
 
 
-    //mark booking as done
+    /*
+     * Marks booking chosen by the user as done
+     * lessonSlot -> Slot chosen by the user
+     * username -> Username of the user
+     * course -> Name of the course
+     * teacherId -> id of the teacher
+     */
     public static jsonMessage<Object> markBooking(String username, int teacherId, String course, int lessonSlot) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -497,6 +553,10 @@ public class Dao {
         }
     }
 
+    /*
+     * Gets all bookings of the teacher
+     * teacherId -> Id of the teacher
+     */
     public static jsonMessage<List<Booking>> getTeacherBookings(int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -530,6 +590,11 @@ public class Dao {
         }
     }
 
+    /*
+     * Gets bookings of the teacher regarding the course
+     * teacherId -> Id of the teacher
+     * course -> Name of the course
+     */
     public static jsonMessage<List<Booking>> getTeacherCourseBookings(String course, int teacherId) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -564,6 +629,11 @@ public class Dao {
         }
     }
 
+    /*
+     * Gets bookings of the user
+     * username -> Username of the user
+     * isAndroid -> check if request come from Android
+     */
     public static jsonMessage<List<Booking>> getUserBookings(String username, boolean isAndroid) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -604,6 +674,10 @@ public class Dao {
         }
     }
 
+    /*
+     * Gets bookings of the user already done or cancelled
+     * username -> Username of the user
+     */
     public static jsonMessage<List<Booking>> getOldUserBookings(String username) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -639,7 +713,7 @@ public class Dao {
         }
     }
 
-    //ADMIN
+    // Gets bookings of all the users
     public static jsonMessage<BothBookings> getAllBookings() {
         Connection conn = null;
         Statement st = null;
@@ -685,6 +759,11 @@ public class Dao {
         }
     }
 
+    /*
+     * Checks if user exist and return it
+     * username -> Username of the user
+     * userPass -> Password of the user
+     */
     public static jsonMessage<User> getUser(String username, String userPass) {
         Connection conn = null;
         PreparedStatement st = null;
@@ -720,6 +799,7 @@ public class Dao {
     }
 }
 
+// Class of the users
 class User {
     private final String username;
     private final boolean admin;
@@ -738,6 +818,7 @@ class User {
     }
 }
 
+// Class of the courses
 class Course {
     private final String name;
 
@@ -747,6 +828,7 @@ class Course {
 
 }
 
+// Class of the teachers
 class Teacher {
     private final int id;
     private final String name;
@@ -760,6 +842,7 @@ class Teacher {
 
 }
 
+// Class of the lessons
 class Lesson {
     private final Teacher teacher;
     private final Course course;
@@ -771,6 +854,7 @@ class Lesson {
 
 }
 
+// Class of the bookings
 class Booking {
     private String username;
     private int teacherId;
@@ -804,6 +888,7 @@ class Booking {
     }
 }
 
+// Class of all the bookings
 class BothBookings {
     List<Booking> oldBookings;
     List<Booking> newBookings;
@@ -814,6 +899,7 @@ class BothBookings {
     }
 }
 
+// Class of the json messages returned from server
 class jsonMessage<T> {
     private final String message;
     private final T data;
@@ -832,6 +918,7 @@ class jsonMessage<T> {
     }
 }
 
+// Enum that refers to the status of the booking
 enum Status {
     ACTIVE,
     DONE,
