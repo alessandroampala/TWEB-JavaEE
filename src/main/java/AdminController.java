@@ -10,19 +10,23 @@ import java.io.PrintWriter;
 
 @WebServlet(name = "AdminController", urlPatterns = {"/AdminController"})
 public class AdminController extends HttpServlet {
+    // Checks if Dao has been initialized, if not it is initialized
     public void init(ServletConfig conf) {
         if (Dao.isNotInitialized())
             Dao.initialize();
     }
 
+    // Post requests
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);
     }
 
+    // Get requests
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         processRequest(request, response);
     }
 
+    // Manages all the requests
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         Gson gson = new Gson();

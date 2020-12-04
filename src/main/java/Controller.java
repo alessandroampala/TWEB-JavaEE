@@ -14,27 +14,28 @@ import java.util.List;
 
 @WebServlet(name = "Controller", urlPatterns = {"/Controller"})
 public class Controller extends HttpServlet {
+    // Checks if Dao has been initialized, if not it is initialized
     public void init(ServletConfig conf) {
         if (Dao.isNotInitialized())
             Dao.initialize();
     }
 
+    // Post requests
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    // Get requests
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    // Manages all the requests
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         Gson gson = new Gson();
 
         HttpSession session = request.getSession();
-        /*String u = (String) session.getAttribute("username");
-        if (u != null)
-            System.out.println("L'username in sessione è: " + u);*/
 
         String action = request.getParameter("action");
         if (action != null) {
@@ -175,8 +176,7 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
 
-                    if(isAdmin(session))
-                    {
+                    if (isAdmin(session)) {
                         jsonMessage<BothBookings> bookings;
                         bookings = Dao.getAllBookings();
                         out.print(gson.toJson(bookings));
@@ -237,10 +237,12 @@ public class Controller extends HttpServlet {
         dispatcher.forward(request, response);
     }
 
+    // Checks if user is logged in
     public static boolean isLoggedIn(HttpSession session) {
         return !session.isNew() && session.getAttribute("username") != null;
     }
 
+    // Checks if user is an admin
     public static boolean isAdmin(HttpSession session) {
         return (boolean) session.getAttribute("isAdmin");
     }
