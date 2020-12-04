@@ -253,7 +253,7 @@
                      :status="booking.status"></booking>
         </div>
         <div v-if="navigation === destination.ADMIN_CONSOLE" class="d-flex flex-row justify-content-center flex-wrap p-2">
-            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+            <div class="card d-flex flex-column text-center p-2 m-2 m-md-3 bg-light border-primary">
                 <div class="card-header font-weight-bold">Docenti</div>
                 <form id="addDocente" class="mb-2">
                     <div class="font-weight-bold text-rigth m-2">Aggiungi Docente</div>
@@ -282,7 +282,7 @@
                     <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteTeacher">
                 </form>
             </div>
-            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+            <div class="card d-flex flex-column text-center p-2 m-2 m-md-3 bg-light border-primary">
                 <div class="card-header font-weight-bold">Corsi</div>
                 <form id="addCorso" class="mb-2">
                     <div class="form-group">
@@ -303,7 +303,7 @@
                     <input type="button" class="btn btn-danger" value="Rimuovi" @click="adminDeleteCourse">
                 </form>
             </div>
-            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+            <div class="card d-flex flex-column text-center p-2 m-2 m-md-3 bg-light border-primary">
                 <div class="card-header font-weight-bold">Lezioni</div>
                 <form id="manageLezione">
                     <div class="form-group">
@@ -337,7 +337,7 @@
                 </div>
             </div>
 
-            <div class="card d-flex flex-column text-center p-2 m-5 bg-light border-primary">
+            <div class="card d-flex flex-column text-center p-2 m-2 m-md-3 bg-light border-primary">
             <div class="card-header font-weight-bold">Prenotazioni</div>
             <div class="d-flex flex-row justify-content-center flex-wrap p-2">
                 <div class="text-center" v-if="allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">Nessuna prenotazione attiva.</div>

@@ -13,25 +13,25 @@
     cursor: default;
 }
 
-delete-ripetizioni-container .card{
-    margin: 0px !important;
+#delete-ripetizioni-container .card{
+    margin: 0 !important;
 }
 
 @media screen and (max-width: 600px) {
     #ripetizioni, .form-control {
         width: 100% !important;
         max-width: 100% !important;
-        margin: 5px 0px 5px 0px !important;
+        margin: 5px 0 5px 0 !important;
     }
 }
 
 @media screen and (max-width: 768px) {
     .nav, .nav li {
         width: 100% !important;
-        margin: 0px !important;
+        margin: 0 !important;
     }
 
     .nav li a {
-        border-radius: 0px !important;
+        border-radius: 0 !important;
     }
 }
