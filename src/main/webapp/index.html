@@ -340,7 +340,8 @@
                 <div class="card-header font-weight-bold">Prenotazioni</div>
                 <div class="d-flex flex-row justify-content-center flex-wrap p-2">
                     <div class="text-center"
-                         v-if="allBookings && allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">Nessuna
+                         v-if="allBookings && allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">
+                        Nessuna
                         prenotazione attiva.
                     </div>
                     <booking v-if="allBookings && allBookings.newBookings.length > 0"
@@ -392,18 +393,21 @@
 <script src="lib/bootstrap-4.5.3-dist/js/bootstrap.min.js"></script>
 <script>
 
+    //Enum for navigation
     const destination = {
         PRENOTA: 'prenota',
         PRENOTAZIONI: 'prenotazioni',
         ADMIN_CONSOLE: 'adminConsole',
     }
 
+    //Enum representing statuses of bookings
     const bookingStatus = {
         ACTIVE: 'ACTIVE',
         CANCELED: 'CANCELED',
         DONE: 'DONE',
     }
 
+    //Converts lessonSlot to string
     function lessonSlotToString(lessonSlot) {
         let day = "";
         switch (Math.floor(lessonSlot / 5)) {
@@ -438,6 +442,7 @@
         }
     }
 
+    //Vue component that represents bookings in Prenotazioni and Admin Console
     Vue.component('booking', {
         props: ['course', 'teacher_name', 'teacher_surname', 'date_hour', 'teacher_id', 'lessonSlot', 'status', 'username'],
         template: '<div class="card m-2">\n' +
@@ -463,6 +468,7 @@
         },
     });
 
+    //Vue component that represents a lesson
     Vue.component('ripetizione', {
         props: ['corso', 'nome', 'cognome', 'id', 'type'],
         template: '<div id="ripetizioni" class="card text-center m-2">\n' +
@@ -474,6 +480,7 @@
             '</div>\n' +
             '</div>',
         methods: {
+            //Emit on click to pass data to vue app
             emitNames: function () {
 
                 if (this.type === 'delete') {
@@ -484,7 +491,7 @@
         },
     });
 
-    var vuee = new Vue({
+    new Vue({
         el: "#body-container",
         data: {
             lessonsFlag: null,
@@ -525,6 +532,7 @@
                 courseLesson: "Seleziona Materia",
             },
         },
+        //When the app is loaded, immediately request data to the server
         mounted() {
             this.materie();
             this.docenti();
@@ -533,16 +541,17 @@
             this.getSessionLogin();
 
             //FORSE NON SERVE?
-            $('#bookModal').on('hidden.bs.modal', function (e) {
+            /*$('#bookModal').on('hidden.bs.modal', function (e) {
                 console.log("CIAO");
                 const table = document.getElementById('calendarTable');
                 for (let i = 0; i < table.children.length; i++) {
                     for (let j = 1; j < table.children[i].cells.length; j++)
                         table.children[i].cells[j].innerHTML = "";
                 }
-            })
+            })*/
         },
         methods: {
+            //Update courses list
             materie: function () {
                 const vm = this;
                 $.get("Controller", {
@@ -555,6 +564,7 @@
                     }
                 });
             },
+            //Update teachers list
             docenti: function () {
                 const vm = this;
                 $.get("Controller", {
@@ -567,6 +577,7 @@
                     }
                 });
             },
+            //Update lessons list
             lezioni: function (corso, docenteId) {
                 const vm = this;
                 $.get("Controller", {
@@ -583,6 +594,7 @@
                     }
                 });
             },
+            //Login function called from login form
             login: function () {
                 const vm = this;
                 if (vm.username == null || vm.username === "" || vm.password == null || vm.password === "") {
@@ -607,6 +619,7 @@
                     }
                 });
             },
+            //Request to server whether already exists a logged in session or not
             getSessionLogin: function () {
                 const vm = this;
                 $.post("Controller", {
@@ -622,6 +635,7 @@
                     vm.sessionCheckEnded = true;
                 });
             },
+            //Logout function
             logout: function () {
                 const vm = this;
                 $.get("Controller", {
@@ -634,6 +648,7 @@
                     vm.navigateTo(destination.PRENOTA)
                 });
             },
+            //Called from ripetizione component to know which lesson should show up in modal table
             onLessonEmit: function (name, surname, course, id) {
                 this.lessonData.name = name;
                 this.lessonData.surname = surname;
@@ -647,6 +662,7 @@
                 this.selectedLessonSlots = [];
                 this.prenotazioniDocente();
             },
+            //Called when the user selects a teacher or course: update showed lessons cards
             selectChanged: function () {
                 let invalidCourse = this.selectedCourse === "Seleziona Materia" || this.selectedCourse === "";
                 let invalidTeacher = this.selectedTeacher === 0 || this.selectedTeacher === "";
@@ -663,6 +679,7 @@
                 if (invalidTeacher)
                     this.selectedTeacher = 0;
             },
+            //Update graphics of calendar table, assumes data have already been setted
             updateCalendar: function () {
                 const table = document.getElementById('calendarTable');
                 const checkCalendarIcon = '<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-calendar-check-fill" fill="white" xmlns="http://www.w3.org/2000/svg">\n' +
@@ -676,7 +693,6 @@
                 }
 
                 //Set red cells
-                //if (this.bookings.length > 0)
                 for (let i = 0; i < this.bookings.length; i++) {
                     let row = this.bookings[i].lessonSlot % 5;
                     let column = Math.trunc((this.bookings[i].lessonSlot / 5)) + 1;
@@ -707,6 +723,7 @@
                     table.children[row].cells[column].innerHTML = checkCalendarIcon;
                 }
             },
+            //Gets all data needed to display the calendar correctly by doing 3 sequential query to the server and updates calendar
             prenotazioniDocente: function () {
                 const vm = this;
                 $.get("Controller", {
@@ -720,24 +737,20 @@
                         teacherId: vm.lessonData.id,
                     }, function (data1) {
                         vm.teacherBookings = data1.data;
-                        //console.log(data1);
                         $.get("Controller", {
                             action: "userBooking",
-                            //teacherId: vm.lessonData.id,
                         }, function (data2) {
                             vm.userBookings = data2.data;
                             vm.userBookings.sort((a, b) => {
                                 return b.lessonSlot - a.lessonSlot
                             });
-                            //console.log(data2);
-                            //now we have bookings, teacherBookings e userBookings and we can update graphics
+                            //now we have bookings, teacherBookings and userBookings and we can update graphics
                             vm.updateCalendar();
                         });
                     });
-
-
                 });
             },
+            //On calendar cell click, add check icon and select slot
             onCellClick: function (i, j) {
                 let lessonSlot = (j - 1) * 5 + i;
                 let checkIcon = '<svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-check2" fill="white" xmlns="http://www.w3.org/2000/svg">\n' +
@@ -755,9 +768,8 @@
                         document.getElementById('calendarTable').children[i].cells[j].innerHTML = checkIcon;
                     }
                 }
-
-                //console.log(this.selectedLessonSlots)
             },
+            //Sends request to server for booking selectedLessonSlots
             prenotaLezioni: function () {
                 const vm = this;
                 if (vm.selectedLessonSlots.length > 0) {
@@ -767,7 +779,6 @@
                         teacherId: vm.lessonData.id,
                         course: vm.lessonData.course,
                     }, function (data) {
-                        //console.log(data);
                         if (data.message !== "OK") {
                             vm.showToast(data.message);
                             if (data.message === "Not logged in")
@@ -783,6 +794,7 @@
                     });
                 }
             },
+            //Gets user booking for display data in Prenotazioni and for displaying calendar correctly
             getUserBookings: function () {
                 const vm = this
                 $.get("Controller", {
@@ -798,6 +810,7 @@
                         });
                 });
             },
+            //Gets non-active user bookings
             getOldUserBookings: function () {
                 const vm = this
                 $.get("Controller", {
@@ -816,6 +829,7 @@
                     //console.log(vm.oldUserBooking)
                 });
             },
+            //ADMIN, gets all bookings and sort them by username
             getAllBookings: function () {
                 const vm = this
                 if (vm.isAdmin) {
@@ -837,12 +851,10 @@
                                 return a.username.localeCompare(b.username)
                             })
                         }
-                        /*vm.allBookings.sort((a, b) => {
-                            return b.lessonSlot - a.lessonSlot
-                        });*/
                     });
                 }
             },
+            //Gets a Enum destination parameter, navigates to that page
             navigateTo: function (dest) {
                 this.navigation = dest;
                 let prenotaNav = document.getElementById("PrenotaNav");
@@ -876,6 +888,7 @@
                         break;
                 }
             },
+            //Cancel a booking of this user
             onEmitDisdici: function (course, lessonSlot, teacherId) {
                 const vm = this;
                 $.post("Controller", {
@@ -894,6 +907,7 @@
                     vm.getOldUserBookings();
                 });
             },
+            //Mark booking as done
             onEmitEffettuata: function (course, lessonSlot, teacherId) {
                 const vm = this;
                 $.post("Controller", {
@@ -908,15 +922,15 @@
                         if (data.message === "Not logged in")
                             vm.logout();
                     }
-
                     vm.getUserBookings();
                     vm.getOldUserBookings();
                 });
             },
+            //Admin Console: Inserts new Teacher
             adminInsertTeacher: function () {
                 const vm = this;
                 //add other checks, maybe with regex
-                if (vm.adminForm.teacherName !== "" && vm.adminForm.teacherSurname !== "") {
+                if (vm.isAdmin && vm.adminForm.teacherName !== "" && vm.adminForm.teacherSurname !== "") {
                     $.post("Controller", {
                         action: "adminInsertTeacher",
                         teacherName: vm.adminForm.teacherName,
@@ -928,16 +942,17 @@
                             vm.docenti();
                         } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Admin Console: Delete selected teacher
             adminDeleteTeacher: function () {
                 const vm = this;
                 //add other checks, maybe with regex
-                if (vm.loggedIn && vm.isAdmin && vm.adminForm.teacherToDelete !== 0) {
+                if (vm.isAdmin() && vm.loggedIn && vm.isAdmin && vm.adminForm.teacherToDelete !== 0) {
                     $.post("Controller", {
                         action: "adminDeleteTeacher",
                         teacherId: vm.adminForm.teacherToDelete,
@@ -947,14 +962,15 @@
                             vm.docenti();
                             vm.getUserBookings();
                             vm.getAllBookings();
-                        } else{
+                        } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Admin Console: Deletes selected course
             adminDeleteCourse: function () {
                 const vm = this;
                 //add other checks, maybe with regex
@@ -967,14 +983,15 @@
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
                             vm.getAllBookings();
-                        } else{
+                        } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Admin Console: Add new course
             adminAddCourse: function () {
                 const vm = this;
                 //add other checks, maybe with regex
@@ -986,14 +1003,15 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseToAdd = "";
                             vm.materie();
-                        } else{
+                        } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Admin Console: Add new Lesson
             adminAddLesson: function () {
                 const vm = this;
                 //add other checks, maybe with regex
@@ -1007,14 +1025,15 @@
                             vm.adminForm.courseLesson = "Seleziona Materia";
                             vm.adminForm.teacherLesson = 0;
                             vm.lezioni(null, null);
-                        } else{
+                        } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Admin Console: Delete Lesson
             adminDeleteLesson: function (course, id) {
                 const vm = this;
                 //add other checks, maybe with regex
@@ -1027,14 +1046,15 @@
                         if (data.message === "OK") {
                             vm.lezioni(null, null);
                             vm.getAllBookings();
-                        } else{
+                        } else {
                             vm.showToast(data.message);
-                            if(data.message === "Not logged in")
+                            if (data.message === "Not logged in")
                                 vm.logout();
                         }
                     });
                 }
             },
+            //Show error toast with message parameter
             showToast: function (message) {
                 this.message = message;
                 $("#errorToast").toast('show');
