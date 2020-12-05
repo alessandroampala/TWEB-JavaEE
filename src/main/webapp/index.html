@@ -217,7 +217,7 @@
                                     </table>
                                     <input v-if="loggedIn && sessionCheckEnded" type="button"
                                            class="btn btn-success btn-block"
-                                           value="Prenota" @click="prenotaLezioni"
+                                           value="Prenota" @click="bookLessons"
                                            :disabled="selectedLessonSlots.length == 0">
                                 </form>
                             </div>
@@ -534,9 +534,9 @@
         },
         //When the app is loaded, immediately request data to the server
         mounted() {
-            this.materie();
-            this.docenti();
-            this.lezioni(null, null);
+            this.getCourses();
+            this.getTeachers();
+            this.getLessons(null, null);
             this.getUserBookings();
             this.getSessionLogin();
 
@@ -552,7 +552,7 @@
         },
         methods: {
             //Update courses list
-            materie: function () {
+            getCourses: function () {
                 const vm = this;
                 $.get("Controller", {
                     action: "materie",
@@ -565,7 +565,7 @@
                 });
             },
             //Update teachers list
-            docenti: function () {
+            getTeachers: function () {
                 const vm = this;
                 $.get("Controller", {
                     action: "docenti"
@@ -578,7 +578,7 @@
                 });
             },
             //Update lessons list
-            lezioni: function (corso, docenteId) {
+            getLessons: function (corso, docenteId) {
                 const vm = this;
                 $.get("Controller", {
                     action: "lessons",
@@ -660,7 +660,7 @@
                         table.children[i].cells[j].innerHTML = "";
                 }
                 this.selectedLessonSlots = [];
-                this.prenotazioniDocente();
+                this.getCalendarData();
             },
             //Called when the user selects a teacher or course: update showed lessons cards
             selectChanged: function () {
@@ -672,7 +672,7 @@
                 if (this.selectedTeacher === 0)
                     this.selectedTeacher = "";
 
-                this.lezioni(this.selectedCourse, this.selectedTeacher);
+                this.getLessons(this.selectedCourse, this.selectedTeacher);
 
                 if (invalidCourse)
                     this.selectedCourse = "Seleziona Materia";
@@ -724,7 +724,7 @@
                 }
             },
             //Gets all data needed to display the calendar correctly by doing 3 sequential query to the server and updates calendar
-            prenotazioniDocente: function () {
+            getCalendarData: function () {
                 const vm = this;
                 $.get("Controller", {
                     action: "prenotazioniDocente",
@@ -770,7 +770,7 @@
                 }
             },
             //Sends request to server for booking selectedLessonSlots
-            prenotaLezioni: function () {
+            bookLessons: function () {
                 const vm = this;
                 if (vm.selectedLessonSlots.length > 0) {
                     $.post("Controller", {
@@ -785,7 +785,7 @@
                                 vm.logout();
                         }
                         vm.selectedLessonSlots = [];
-                        vm.prenotazioniDocente();
+                        vm.getCalendarData();
                         const table = document.getElementById('calendarTable');
                         for (let i = 0; i < table.children.length; i++) {
                             for (let j = 1; j < table.children[i].cells.length; j++)
@@ -871,9 +871,9 @@
                 switch (this.navigation) {
                     case destination.PRENOTA:
                         prenotaNav.classList.add("active");
-                        this.materie();
-                        this.docenti();
-                        this.lezioni(null, null);
+                        this.getCourses();
+                        this.getTeachers();
+                        this.getLessons(null, null);
                         this.getUserBookings();
                         break;
                     case destination.PRENOTAZIONI:
@@ -939,7 +939,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.teacherName = "";
                             vm.adminForm.teacherSurname = "";
-                            vm.docenti();
+                            vm.getTeachers();
                         } else {
                             vm.showToast(data.message);
                             if (data.message === "Not logged in")
@@ -959,7 +959,7 @@
                     }, function (data) {
                         if (data.message === "OK") {
                             vm.adminForm.teacherToDelete = 0;
-                            vm.docenti();
+                            vm.getTeachers();
                             vm.getUserBookings();
                             vm.getAllBookings();
                         } else {
@@ -981,7 +981,7 @@
                     }, function (data) {
                         if (data.message === "OK") {
                             vm.adminForm.courseToDelete = "Seleziona Materia";
-                            vm.materie();
+                            vm.getCourses();
                             vm.getAllBookings();
                         } else {
                             vm.showToast(data.message);
@@ -1002,7 +1002,7 @@
                     }, function (data) {
                         if (data.message === "OK") {
                             vm.adminForm.courseToAdd = "";
-                            vm.materie();
+                            vm.getCourses();
                         } else {
                             vm.showToast(data.message);
                             if (data.message === "Not logged in")
@@ -1024,7 +1024,7 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseLesson = "Seleziona Materia";
                             vm.adminForm.teacherLesson = 0;
-                            vm.lezioni(null, null);
+                            vm.getLessons(null, null);
                         } else {
                             vm.showToast(data.message);
                             if (data.message === "Not logged in")
@@ -1044,7 +1044,7 @@
                         teacherId: id,
                     }, function (data) {
                         if (data.message === "OK") {
-                            vm.lezioni(null, null);
+                            vm.getLessons(null, null);
                             vm.getAllBookings();
                         } else {
                             vm.showToast(data.message);
