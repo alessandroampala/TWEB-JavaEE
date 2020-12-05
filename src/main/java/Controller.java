@@ -36,6 +36,7 @@ public class Controller extends HttpServlet {
         Gson gson = new Gson();
 
         HttpSession session = request.getSession();
+        //session.setMaxInactiveInterval(10);
 
         String action = request.getParameter("action");
         if (action != null) {
@@ -101,7 +102,7 @@ public class Controller extends HttpServlet {
                         jsonData = new jsonMessage<>("Sessione valida", new User((String) session.getAttribute("username"), (boolean) session.getAttribute("isAdmin")));
                     } else {
                         session.invalidate();
-                        jsonData = new jsonMessage<>("Sessione invalida", null);
+                        jsonData = new jsonMessage<>("Not logged in", null);
                     }
                     out.print(gson.toJson(jsonData));
                     out.close();
@@ -146,12 +147,21 @@ public class Controller extends HttpServlet {
                     String username = (String) session.getAttribute("username");
                     String isAndroid = request.getParameter("isAndroid");
                     jsonMessage<List<Booking>> bookings;
-                    if (isAndroid != null)
-                        bookings = Dao.getUserBookings(username, true);
-                    else
-                        bookings = Dao.getUserBookings(username, false);
 
-                    out.print(gson.toJson(bookings));
+                    if(isLoggedIn(session))
+                    {
+                        if (isAndroid != null)
+                            bookings = Dao.getUserBookings(username, true);
+                        else
+                            bookings = Dao.getUserBookings(username, false);
+                        out.print(gson.toJson(bookings));
+                    }
+                    else
+                    {
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
+                        return;
+                    }
+
                     out.flush();
                     out.close();
                     return;
@@ -160,14 +170,19 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String username = (String) session.getAttribute("username");
-                    jsonMessage<List<Booking>> bookings;
+                    jsonMessage<List<Booking>> bookings = null;
 
-                    bookings = Dao.getOldUserBookings(username);
+                    if(isLoggedIn(session))
+                    {
+                        bookings = Dao.getOldUserBookings(username);
+                        out.print(gson.toJson(bookings));
+                    }
+                    else
+                    {
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
+                        return;
+                    }
 
-                    /*for (Booking b : bookings.getData()) {
-                        b.username = null;
-                    }*/
-                    out.print(gson.toJson(bookings));
                     out.flush();
                     out.close();
                     return;
@@ -176,10 +191,14 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
 
-                    if (isAdmin(session)) {
+                    if (isLoggedIn(session) && isAdmin(session)) {
                         jsonMessage<BothBookings> bookings;
                         bookings = Dao.getAllBookings();
                         out.print(gson.toJson(bookings));
+                    }
+                    else
+                    {
+                        out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
                     }
 
                     out.flush();

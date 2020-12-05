@@ -33,6 +33,16 @@ public class AdminController extends HttpServlet {
 
         HttpSession session = request.getSession();
 
+        if(!Controller.isLoggedIn(session))
+        {
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json;charset=UTF-8");
+            out.print(gson.toJson(new jsonMessage<Object>("Not logged in", null)));
+            out.flush();
+            out.close();
+            return;
+        }
+
         String action = request.getParameter("action");
         if (Controller.isLoggedIn(session) && Controller.isAdmin(session) && action != null) {
             switch (action) {

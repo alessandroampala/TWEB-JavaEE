@@ -228,7 +228,7 @@
             <!-- End Modal -->
         </div>
         <div v-if="navigation === destination.PRENOTAZIONI" class="d-flex flex-column justify-content-center p-2">
-            <booking v-if="userBookings.length > 0"
+            <booking v-if="userBookings && userBookings.length > 0"
                      v-for="booking in userBookings"
                      :course="booking.course"
                      :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
@@ -239,7 +239,8 @@
                      @emit-disdici="onEmitDisdici"
                      @emit-effettuata="onEmitEffettuata"
                      :status="null"></booking>
-            <div class="text-center" v-if="userBookings.length === 0">Nessuna prenotazione attiva.</div>
+            <div class="text-center" v-if="!userBookings || userBookings.length === 0">Nessuna prenotazione attiva.
+            </div>
             <booking v-if="oldUserBooking.length > 0"
                      v-for="booking in oldUserBooking"
                      :course="booking.course"
@@ -339,10 +340,10 @@
                 <div class="card-header font-weight-bold">Prenotazioni</div>
                 <div class="d-flex flex-row justify-content-center flex-wrap p-2">
                     <div class="text-center"
-                         v-if="allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">Nessuna
+                         v-if="allBookings && allBookings.oldBookings.length === 0 && allBookings.newBookings.length === 0">Nessuna
                         prenotazione attiva.
                     </div>
-                    <booking v-if="allBookings.newBookings.length > 0"
+                    <booking v-if="allBookings && allBookings.newBookings.length > 0"
                              v-for="booking in allBookings.newBookings"
                              :course="booking.course"
                              :teacher_name="teachers.find((element) => {return element.id === booking.teacherId}).name"
@@ -506,7 +507,7 @@
             selectedTeacher: 0,
             bookings: null,
             teacherBookings: null,
-            userBookings: null,
+            userBookings: [],
             oldUserBooking: [],
             allBookings: {
                 oldBookings: [],
@@ -616,7 +617,8 @@
                         vm.password = null;
                         vm.isAdmin = data.data.admin;
                         vm.loggedIn = true;
-                    }
+                    } else if (vm.loggedIn && data.message === "Not logged in")
+                        vm.logout();
                     vm.sessionCheckEnded = true;
                 });
             },
@@ -768,6 +770,8 @@
                         //console.log(data);
                         if (data.message !== "OK") {
                             vm.showToast(data.message);
+                            if (data.message === "Not logged in")
+                                vm.logout();
                         }
                         vm.selectedLessonSlots = [];
                         vm.prenotazioniDocente();
@@ -784,13 +788,14 @@
                 $.get("Controller", {
                     action: "userBooking",
                 }, function (data) {
-                    if (data.message !== "OK") {
+                    if (data.message !== "OK" && vm.loggedIn) {
                         vm.showToast(data.message);
                     }
                     vm.userBookings = data.data;
-                    vm.userBookings.sort((a, b) => {
-                        return b.lessonSlot - a.lessonSlot
-                    });
+                    if (vm.userBookings)
+                        vm.userBookings.sort((a, b) => {
+                            return b.lessonSlot - a.lessonSlot
+                        });
                 });
             },
             getOldUserBookings: function () {
@@ -800,11 +805,14 @@
                 }, function (data) {
                     if (data.message !== "OK") {
                         vm.showToast(data.message);
+                        if (data.message === "Not logged in")
+                            vm.logout();
                     }
                     vm.oldUserBooking = data.data;
-                    vm.oldUserBooking.sort((a, b) => {
-                        return b.lessonSlot - a.lessonSlot
-                    });
+                    if (vm.oldUserBooking)
+                        vm.oldUserBooking.sort((a, b) => {
+                            return b.lessonSlot - a.lessonSlot
+                        });
                     //console.log(vm.oldUserBooking)
                 });
             },
@@ -817,14 +825,18 @@
                         //console.log(data);
                         if (data.message !== "OK") {
                             vm.showToast(data.message);
+                            if (data.message === "Not logged in")
+                                vm.logout();
                         }
                         vm.allBookings = data.data;
-                        vm.allBookings.oldBookings.sort((a, b) => {
-                            return a.username.localeCompare(b.username)
-                        })
-                        vm.allBookings.newBookings.sort((a, b) => {
-                            return a.username.localeCompare(b.username)
-                        })
+                        if (vm.allBookings) {
+                            vm.allBookings.oldBookings.sort((a, b) => {
+                                return a.username.localeCompare(b.username)
+                            })
+                            vm.allBookings.newBookings.sort((a, b) => {
+                                return a.username.localeCompare(b.username)
+                            })
+                        }
                         /*vm.allBookings.sort((a, b) => {
                             return b.lessonSlot - a.lessonSlot
                         });*/
@@ -837,8 +849,10 @@
                 let prenotazioniNav = document.getElementById("PrenotazioniNav");
                 let adminConsoleNav = document.getElementById("AdminConsoleNav");
 
-                prenotaNav.classList.remove("active");
-                prenotazioniNav.classList.remove("active");
+                if (prenotaNav)
+                    prenotaNav.classList.remove("active");
+                if (prenotazioniNav)
+                    prenotazioniNav.classList.remove("active");
                 if (adminConsoleNav)
                     adminConsoleNav.classList.remove("active");
 
@@ -870,9 +884,12 @@
                     lessonSlot: lessonSlot,
                     teacherId: teacherId,
                 }, function (data) {
-                    //console.log(data);
-                    if (data.message !== "OK")
+                    if (data.message !== "OK") {
                         vm.showToast(data.message);
+                        if (data.message === "Not logged in")
+                            vm.logout();
+                    }
+
                     vm.getUserBookings();
                     vm.getOldUserBookings();
                 });
@@ -886,8 +903,12 @@
                     teacherId: teacherId,
                 }, function (data) {
                     console.log(data);
-                    if (data.message !== "OK")
+                    if (data.message !== "OK") {
                         vm.showToast(data.message);
+                        if (data.message === "Not logged in")
+                            vm.logout();
+                    }
+
                     vm.getUserBookings();
                     vm.getOldUserBookings();
                 });
@@ -905,8 +926,11 @@
                             vm.adminForm.teacherName = "";
                             vm.adminForm.teacherSurname = "";
                             vm.docenti();
-                        } else
+                        } else {
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
@@ -923,8 +947,11 @@
                             vm.docenti();
                             vm.getUserBookings();
                             vm.getAllBookings();
-                        } else
+                        } else{
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
@@ -940,8 +967,11 @@
                             vm.adminForm.courseToDelete = "Seleziona Materia";
                             vm.materie();
                             vm.getAllBookings();
-                        } else
+                        } else{
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
@@ -956,8 +986,11 @@
                         if (data.message === "OK") {
                             vm.adminForm.courseToAdd = "";
                             vm.materie();
-                        } else
+                        } else{
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
@@ -974,8 +1007,11 @@
                             vm.adminForm.courseLesson = "Seleziona Materia";
                             vm.adminForm.teacherLesson = 0;
                             vm.lezioni(null, null);
-                        } else
+                        } else{
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
@@ -991,8 +1027,11 @@
                         if (data.message === "OK") {
                             vm.lezioni(null, null);
                             vm.getAllBookings();
-                        } else
+                        } else{
                             vm.showToast(data.message);
+                            if(data.message === "Not logged in")
+                                vm.logout();
+                        }
                     });
                 }
             },
