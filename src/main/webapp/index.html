@@ -952,7 +952,7 @@
             adminDeleteTeacher: function () {
                 const vm = this;
                 //add other checks, maybe with regex
-                if (vm.isAdmin() && vm.loggedIn && vm.isAdmin && vm.adminForm.teacherToDelete !== 0) {
+                if (vm.isAdmin && vm.loggedIn && vm.isAdmin && vm.adminForm.teacherToDelete !== 0) {
                     $.post("Controller", {
                         action: "adminDeleteTeacher",
                         teacherId: vm.adminForm.teacherToDelete,

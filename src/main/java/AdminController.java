@@ -53,7 +53,6 @@ public class AdminController extends HttpServlet {
                     String surname = request.getParameter("teacherSurname");
 
                     jsonMessage<Object> result = Dao.insertTeacher(name, surname);
-                    System.out.println(result.getMessage());
                     out.print(gson.toJson(result));
                     out.flush();
                     out.close();
