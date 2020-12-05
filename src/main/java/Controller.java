@@ -57,7 +57,7 @@ public class Controller extends HttpServlet {
                     out.close();
                     return;
                 }
-                case "materie": {
+                case "courses": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     jsonMessage<List<Course>> courses = Dao.getCourses();
@@ -67,7 +67,7 @@ public class Controller extends HttpServlet {
                     out.close();
                     return;
                 }
-                case "docenti": {
+                case "teachers": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     jsonMessage<List<Teacher>> teachers = Dao.getTeachers();
@@ -111,7 +111,7 @@ public class Controller extends HttpServlet {
                 case "logout":
                     session.invalidate();
                     break;
-                case "prenotazioniDocente": {
+                case "teacherCourseBookings": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
@@ -205,7 +205,7 @@ public class Controller extends HttpServlet {
                     out.close();
                     return;
                 }
-                case "prenotaLezioni": {
+                case "bookLessons": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {
@@ -220,7 +220,7 @@ public class Controller extends HttpServlet {
                     out.close();
                     return;
                 }
-                case "disdici": {
+                case "cancelBooking": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {
@@ -235,7 +235,7 @@ public class Controller extends HttpServlet {
                     out.close();
                     return;
                 }
-                case "effettuata": {
+                case "markBooking": {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     if (isLoggedIn(session)) {

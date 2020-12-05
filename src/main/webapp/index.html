@@ -539,23 +539,13 @@
             this.getLessons(null, null);
             this.getUserBookings();
             this.getSessionLogin();
-
-            //FORSE NON SERVE?
-            /*$('#bookModal').on('hidden.bs.modal', function (e) {
-                console.log("CIAO");
-                const table = document.getElementById('calendarTable');
-                for (let i = 0; i < table.children.length; i++) {
-                    for (let j = 1; j < table.children[i].cells.length; j++)
-                        table.children[i].cells[j].innerHTML = "";
-                }
-            })*/
         },
         methods: {
             //Update courses list
             getCourses: function () {
                 const vm = this;
                 $.get("Controller", {
-                    action: "materie",
+                    action: "courses",
                 }, function (data) {
                     if (data.message === "OK") {
                         vm.courses = data.data;
@@ -568,7 +558,7 @@
             getTeachers: function () {
                 const vm = this;
                 $.get("Controller", {
-                    action: "docenti"
+                    action: "teachers"
                 }, function (data) {
                     if (data.message === "OK") {
                         vm.teachers = data.data;
@@ -727,7 +717,7 @@
             getCalendarData: function () {
                 const vm = this;
                 $.get("Controller", {
-                    action: "prenotazioniDocente",
+                    action: "teacherCourseBookings",
                     course: vm.lessonData.course,
                     teacherId: vm.lessonData.id,
                 }, function (data) {
@@ -774,7 +764,7 @@
                 const vm = this;
                 if (vm.selectedLessonSlots.length > 0) {
                     $.post("Controller", {
-                        action: "prenotaLezioni",
+                        action: "bookLessons",
                         lessonSlots: JSON.stringify(vm.selectedLessonSlots),
                         teacherId: vm.lessonData.id,
                         course: vm.lessonData.course,
@@ -892,7 +882,7 @@
             onEmitDisdici: function (course, lessonSlot, teacherId) {
                 const vm = this;
                 $.post("Controller", {
-                    action: "disdici",
+                    action: "cancelBooking",
                     course: course,
                     lessonSlot: lessonSlot,
                     teacherId: teacherId,
@@ -911,7 +901,7 @@
             onEmitEffettuata: function (course, lessonSlot, teacherId) {
                 const vm = this;
                 $.post("Controller", {
-                    action: "effettuata",
+                    action: "markBooking",
                     course: course,
                     lessonSlot: lessonSlot,
                     teacherId: teacherId,
@@ -962,6 +952,7 @@
                             vm.getTeachers();
                             vm.getUserBookings();
                             vm.getAllBookings();
+                            vm.getLessons(null, null);
                         } else {
                             vm.showToast(data.message);
                             if (data.message === "Not logged in")
