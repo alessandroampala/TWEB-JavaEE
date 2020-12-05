@@ -170,12 +170,10 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
                     String username = (String) session.getAttribute("username");
-                    jsonMessage<List<Booking>> bookings = null;
 
                     if(isLoggedIn(session))
                     {
-                        bookings = Dao.getOldUserBookings(username);
-                        out.print(gson.toJson(bookings));
+                        out.print(gson.toJson(Dao.getOldUserBookings(username)));
                     }
                     else
                     {

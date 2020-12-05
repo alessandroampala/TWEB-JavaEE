@@ -919,8 +919,15 @@
             //Admin Console: Inserts new Teacher
             adminInsertTeacher: function () {
                 const vm = this;
-                //add other checks, maybe with regex
                 if (vm.isAdmin && vm.adminForm.teacherName !== "" && vm.adminForm.teacherSurname !== "") {
+
+                    //regex test
+                    if(!(/^[a-zA-Z]+$/.test(vm.adminForm.teacherName) && /^[a-zA-Z]+$/.test(vm.adminForm.teacherSurname)))
+                    {
+                        vm.showToast("Nome e cognome del docente devono contenere solo lettere");
+                        return;
+                    }
+
                     $.post("Controller", {
                         action: "adminInsertTeacher",
                         teacherName: vm.adminForm.teacherName,

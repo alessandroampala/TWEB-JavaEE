@@ -37,7 +37,7 @@ public class AdminController extends HttpServlet {
         {
             PrintWriter out = response.getWriter();
             response.setContentType("application/json;charset=UTF-8");
-            out.print(gson.toJson(new jsonMessage<Object>("Not logged in", null)));
+            out.print(gson.toJson(new jsonMessage<>("Not logged in", null)));
             out.flush();
             out.close();
             return;
@@ -52,8 +52,11 @@ public class AdminController extends HttpServlet {
                     String name = request.getParameter("teacherName");
                     String surname = request.getParameter("teacherSurname");
 
-                    jsonMessage<Object> result = Dao.insertTeacher(name, surname);
-                    out.print(gson.toJson(result));
+                    if(name.matches("^[a-zA-Z]+$") && name.matches("^[a-zA-Z]+$"))
+                        out.print(gson.toJson(Dao.insertTeacher(name, surname)));
+                    else
+                        out.print(gson.toJson(new jsonMessage<>("Nome e cognome del docente devono contenere solo lettere", null)));
+
                     out.flush();
                     out.close();
                     return;
