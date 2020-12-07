@@ -918,7 +918,7 @@ class jsonMessage<T> {
     }
 }
 
-// Enum that refers the status of the booking
+// Enum that refers to the status of the booking
 enum Status {
     ACTIVE,
     DONE,
