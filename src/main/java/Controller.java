@@ -41,6 +41,8 @@ public class Controller extends HttpServlet {
         String action = request.getParameter("action");
         if (action != null) {
 
+            System.out.println(action);
+
             if (action.contains("admin")) {
                 RequestDispatcher dispatcher = request.getRequestDispatcher("AdminController");
                 dispatcher.forward(request, response);
@@ -83,13 +85,15 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
 
-                    jsonMessage<User> jsonData = Dao.getUser(username, password);
-                    if (jsonData.getMessage().equals("OK")) //user exists
-                    {
-                        session.setAttribute("username", jsonData.getData().getUsername());
-                        session.setAttribute("isAdmin", jsonData.getData().getAdmin());
+                    if(username != "" && password != "") {
+                        jsonMessage<User> jsonData = Dao.getUser(username, password);
+                        if (jsonData.getMessage().equals("OK")) //user exists
+                        {
+                            session.setAttribute("username", jsonData.getData().getUsername());
+                            session.setAttribute("isAdmin", jsonData.getData().getAdmin());
+                        }
+                        out.print(gson.toJson(jsonData));
                     }
-                    out.print(gson.toJson(jsonData));
                     out.flush();
                     out.close();
                     return;
