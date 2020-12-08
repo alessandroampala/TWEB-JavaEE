@@ -52,7 +52,7 @@ public class AdminController extends HttpServlet {
                     String name = request.getParameter("teacherName");
                     String surname = request.getParameter("teacherSurname");
 
-                    if(name.matches("^[a-zA-Z]+$") && name.matches("^[a-zA-Z]+$"))
+                    if(name.matches("^[a-zA-Z]+$") && surname.matches("^[a-zA-Z][a-zA-Z ']+$"))
                         out.print(gson.toJson(Dao.insertTeacher(name, surname)));
                     else
                         out.print(gson.toJson(new jsonMessage<>("Nome e cognome del docente devono contenere solo lettere", null)));
@@ -76,7 +76,11 @@ public class AdminController extends HttpServlet {
                     response.setContentType("application/json;charset=UTF-8");
                     String course = request.getParameter("course");
 
-                    out.print(gson.toJson(Dao.insertCourse(course)));
+                    if(course.matches("^[a-zA-Z][a-zA-Z ']+$"))
+                        out.print(gson.toJson(Dao.insertCourse(course)));
+                    else
+                        out.print(gson.toJson(new jsonMessage<>("Nome del corso non valido", null)));
+
                     out.flush();
                     out.close();
                     return;

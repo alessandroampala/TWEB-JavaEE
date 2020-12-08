@@ -922,8 +922,7 @@
                 if (vm.isAdmin && vm.adminForm.teacherName !== "" && vm.adminForm.teacherSurname !== "") {
 
                     //regex test
-                    if(!(/^[a-zA-Z]+$/.test(vm.adminForm.teacherName) && /^[a-zA-Z]+$/.test(vm.adminForm.teacherSurname)))
-                    {
+                    if (!(/^[a-zA-Z]+$/.test(vm.adminForm.teacherName) && /^[a-zA-Z][a-zA-Z ']+$/.test(vm.adminForm.teacherSurname))) {
                         vm.showToast("Nome e cognome del docente devono contenere solo lettere");
                         return;
                     }
@@ -992,7 +991,11 @@
             //Admin Console: Add new course
             adminAddCourse: function () {
                 const vm = this;
-                //add other checks, maybe with regex
+
+                if (!/^[a-zA-Z][a-zA-Z ']+$/.test(vm.adminForm.courseToAdd)) {
+                    vm.showToast("Nome corso non valido");
+                    return;
+                }
                 if (vm.loggedIn && vm.isAdmin && vm.adminForm.courseToAdd !== "") {
                     $.post("Controller", {
                         action: "adminAddCourse",

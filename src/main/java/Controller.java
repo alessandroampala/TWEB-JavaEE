@@ -85,7 +85,7 @@ public class Controller extends HttpServlet {
                     PrintWriter out = response.getWriter();
                     response.setContentType("application/json;charset=UTF-8");
 
-                    if(username != "" && password != "") {
+                    if(!username.equals("") && !password.equals("")) {
                         jsonMessage<User> jsonData = Dao.getUser(username, password);
                         if (jsonData.getMessage().equals("OK")) //user exists
                         {
